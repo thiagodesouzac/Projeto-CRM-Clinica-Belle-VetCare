@@ -365,4 +365,4 @@ O Belle VetCare CRM representa um case completo de desenvolvimento Salesforce qu
 
 **Desenvolvido como demonstração prática de competências em Salesforce Administration e Development**
 
-Elaborado por Thiago de Souza - Salesforce developer & Administrator
+Elaborado por Thiago de Souza - Salesforce Developer & Administrator
