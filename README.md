@@ -200,7 +200,7 @@ O campo CRMV (Conselho Regional de Medicina Veterinária) é restrito:
 ### Implementação
 
 - **Profile**: Configuração base de permissões
-- **Permission Sets**: Granularidade adicional de acesso
+- **Permission Sets**: Gerenciamento adicional de acesso
 - **Regras de Validação**: Garantem consistência de dados
 
 ---
