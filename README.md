@@ -93,7 +93,7 @@ Appointment__c ←→ Vet__c
 | Hora | Time | Horário do atendimento |
 | Tutor | Lookup | Responsável pelo pet |
 | Pet | Lookup | Animal a ser atendido |
-| Tipo de Atendimento | Picklist | Consulta, vacinação, cirurgia, etc |
+| Tipo de Atendimento | Picklist | Consulta, vacinação, cirurgia, exames, internação, emergência |
 
 ---
 
