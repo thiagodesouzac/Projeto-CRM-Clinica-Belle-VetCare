@@ -94,7 +94,6 @@ Appointment__c ←→ Vet__c
 | Tutor | Lookup | Responsável pelo pet |
 | Pet | Lookup | Animal a ser atendido |
 | Tipo de Atendimento | Picklist | Consulta, vacinação, cirurgia, etc |
-| Espécie | Picklist | Espécie do animal |
 
 ---
 
