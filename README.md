@@ -90,7 +90,7 @@ Appointment__c ←→ Vet__c
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
 | Data | Date | Data da consulta |
-| Hora | Time | Horário do atendimento |
+| Hora | Picklist | Horário do atendimento padronizado |
 | Tutor | Lookup | Responsável pelo pet |
 | Pet | Lookup | Animal a ser atendido |
 | Tipo de Atendimento | Picklist | Consulta, vacinação, cirurgia, exames, internação, emergência |
