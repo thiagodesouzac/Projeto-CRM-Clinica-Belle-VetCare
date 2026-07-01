@@ -150,18 +150,17 @@ Específico para operação de recepção da clínica.
 
 - Criar e editar tutores
 - Criar e editar pets
-- Criar e editar veterinários
 - Criar e editar agendamentos
 
 #### Restrições Aplicadas
 
 - Sem permissão de deletar para nenhum objeto
-- Sem acesso visual ao campo CRMV dos veterinários
+- Sem acesso visual ao campos dos veterinários
 - Acesso limitado apenas aos registros operacionais necessários
 
 #### Field-Level Security
 
-O campo CRMV (Conselho Regional de Medicina Veterinária) é restrito:
+O objeto vet: 
 
 - Visível apenas para administradores
 - Não aparece nos registros da recepção
@@ -277,7 +276,7 @@ Sistema registra histórico completo
 - Modelagem de objetos customizados
 - Criação e configuração de campos
 - Definição de relacionamentos (Lookup)
-- Organização de Lightning App
+- Organização de Lightning App Builder
 - Configuração de perfil e permission sets
 - Implementação de field-level security
 - Criação de custom report types
