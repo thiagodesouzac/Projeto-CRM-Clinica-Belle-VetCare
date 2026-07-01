@@ -136,36 +136,6 @@ Interface de navegação organizada para operação da clínica com tabs:
 - **Reports**: Relatórios operacionais
 - **Dashboards**: Indicadores gerenciais
 
-### 4. Bot de Atendimento (Enhanced)
-
-Bot implementado como porta de entrada do atendimento digital.
-
-#### Jornada do Cliente
-
-```
-Menu Principal
-├── Cadastrar Tutor e Pet
-│   ├── Coletam dados pessoais
-│   ├── Validam CPF
-│   └── Criam registros no sistema
-│
-├── Agendar Atendimento
-│   ├── Solicita CPF para validação
-│   ├── Se existe cadastro → segue agendamento
-│   └── Se não existe → direciona para cadastro
-│
-└── Falar com Atendente
-    └── Transfere para atendimento humano
-```
-
-#### Bot Flows: Autolaunched flow
-
-- **Bot Tutor Registration**: Cadastro de tutor responsável
-- **Bot Pet Registration**: Cadastro do pet
-- **Bot Appointment Scheduling**: Agendamento com validação
-- **Bot Check Tutor CPF**: Verificação de cadastro existente
-- **Bot Transfer Agent**: Transferência para atendente humano
-
 ---
 
 ## Camada de Segurança e Governança
@@ -226,7 +196,7 @@ Baseado no objeto Appointment__c para estruturar dados analíticos.
 - Identifica especialista mais demandado
 
 #### Tipos de Atendimento por Mês
-- Categoriza atendimentos (consulta, vacinação, cirurgia)
+- Categoriza atendimentos (consulta, vacinação, cirurgia, exames, emergência)
 - Oferece visão de demanda por tipo de serviço
 
 ### Dashboard Operacional
@@ -248,7 +218,7 @@ Componentes gráficos para gestão em tempo real:
 |-----------|-----------|
 | Plataforma | Salesforce |
 | Automação | Flow (Record-Triggered e Autolaunched) |
-| Interface | Lightning (App, Pages, Components) |
+| Interface | Lightning (App, Pages, Components, Layout) |
 | Relatórios | Salesforce Reports & Dashboards |
 | Bot | Salesforce Enhanced Bot |
 | Banco de Dados | Salesforce Objects e Fields |
