@@ -84,7 +84,6 @@ Appointment__c ←→ Vet__c
 | Specialty | Picklist | Campo de especialização |
 | Available Days | Picklist (multi-select) | Dias de atendimentos |
 | Status | Picklist | Ativo ou Inativo |
-| Veterinary User | Lookup (User) | 
 
 #### 4. Appointment__c (Agendamento)
 
@@ -99,18 +98,14 @@ Appointment__c ←→ Vet__c
 | Reference | Auto Number | Nome/Número do prontuário |
 | Service Type | Picklist | Tipo de atendimento (Consulta, Vacinação, Exames, etcs) |
 | Species | Picklist | Espécies (Cachorro, Gato, Coelho, etcs) |
-| Status | Picklist | Ativo ou Inativo |
+| Status | Picklist | Agendado, Confirmado, Cancelado e Concluído |
 | Time | Picklist | Horário do atendimento padronizado |
 | Tutor | Lookup(Tutor) | Responsável pelo pet |
 | Vet | Lookup(Vet) | Animal a ser atendido |
 
-| Tipo de Atendimento | Picklist | Consulta, vacinação, cirurgia, exames, internação, emergência |
-
 ---
 
 ## Funcionalidades Principais
-
-
 
 ### Flow 1. Automação de Notificações
 
@@ -137,7 +132,7 @@ Executado automaticamente após a criação de um registro de consulta (`Appoint
 
 **Tipo:** Record-Triggered Flow
 
-Executado automaticamente quando uma consulta é cancelada.
+Executado automaticamente quando uma consulta é cancelada, enviando uma notificação por e-mail ao veterinário responsável.
 
 **Responsabilidades:**
 
