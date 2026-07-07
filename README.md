@@ -409,6 +409,7 @@ Para o perfil de **Recepcionista**, a interface foi simplificada para exibir exc
 - **Email**
 
 Os demais campos permanecem ocultos para esse perfil, reduzindo a exposição de informações administrativas e sensíveis, sem comprometer a funcionalidade do campo **Lookup** utilizado no objeto **Appointment**.
+
 ---
 
 ## Governança de Permissões
