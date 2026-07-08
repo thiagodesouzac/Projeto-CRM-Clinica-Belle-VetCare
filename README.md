@@ -549,11 +549,11 @@ Ao iniciar uma conversa, o chatbot apresenta uma mensagem de boas-vindas e exibe
 
 | Opção | Funcionalidade |
 |--------|----------------|
-| **1** | Cadastro de Tutor e Pet |
-| **2** | Agendamento de Consulta |
-| **3** | Cancelamento de Consulta |
-| **4** | Atendimento Humano |
-| **5** | Encerrar Conversa |
+| **1** | Cadastrar |
+| **2** | Agendar Consulta |
+| **3** | Cancelar Consulta |
+| **4** | Falar com Atendente |
+| **5** | Encerrar |
 
 ---
 
