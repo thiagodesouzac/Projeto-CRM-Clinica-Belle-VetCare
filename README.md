@@ -557,7 +557,7 @@ Ao iniciar uma conversa, o chatbot apresenta uma mensagem de boas-vindas e exibe
 
 ---
 
-# Fluxo 1 — Cadastro de Tutor e Pet
+# Fluxo 1 — Cadastrar
 
 ## Objetivo
 
@@ -639,7 +639,7 @@ Agora você já pode realizar agendamentos diretamente pelo chatbot.
 ```
 ---
 
-# Fluxo 2 — Agendamento de Consulta
+# Fluxo 2 — Agendar Consulta
 
 ## Objetivo
 
@@ -732,7 +732,7 @@ Ao final do processo, o usuário pode escolher:
 
 ---
 
-# Fluxo 3 — Cancelamento de Consulta
+# Fluxo 3 — Cancelar Consulta
 
 ## Objetivo
 
@@ -780,7 +780,7 @@ O usuário poderá escolher:
 
 ---
 
-# Fluxo 4 — Atendimento Humano
+# Fluxo 4 — Falar com Atendente
 
 ## Objetivo
 
@@ -798,7 +798,7 @@ Nesta etapa o chatbot encerra seu fluxo automatizado e direciona o usuário ao a
 
 ---
 
-# Fluxo 5 — Encerramento da Conversa
+# Fluxo 5 — Encerrar
 
 Quando o usuário seleciona a opção **Encerrar**, o chatbot finaliza a sessão.
 
