@@ -474,9 +474,9 @@ Componentes gráficos para gestão em tempo real:
 
 | Componente | Tipo | Métrica |
 |-----------|------|--------|
-| Line Chart | Gráfico de linha | Quantidade de consultas por dia |
-| Metric Chart | Card | Total de consultas no mês |
-| Bar Chart | Gráfico de barras | Veterinário com mais consultas |
+| Metric Chart | Gráfico de linha | Quantidade de consultas por dia |
+| Horizontal Chart | Card | Total de consultas no mês |
+| Horizontal Chart | Gráfico de barras | Veterinário com mais consultas |
 | Donut Chart | Gráfico de pizza | Distribuição de tipos de atendimento |
 
 ---
