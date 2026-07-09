@@ -216,11 +216,7 @@ O projeto implementa validações robustas para garantir integridade cadastral:
 - **Validação de CPF**: Fórmula de validação automática do documento.
 
     • Ex: Informe 11 números ou utilize o formato 000.000.000-00.
-
-- **Validação de CEP**: Validação de formato postal
-      
-    • O formato correto deve ser 99999-999.
-      
+    
 - **Regras de Relacionamento**: Garante que agendamento tenha tutor e pet válidos
       
     • Validação de campos obrigatórios (Required)
