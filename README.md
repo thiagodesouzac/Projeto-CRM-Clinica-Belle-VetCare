@@ -4,17 +4,19 @@
 
 ---
 
-## Visão Geral
+# Visão Geral
 
-O Belle VetCare é um projeto de CRM desenvolvido em Salesforce que estrutura e automatiza a operação completa de uma clínica veterinária. A solução centraliza o cadastro de tutores, pets, veterinários e consultas em uma única plataforma, implementando automações operacionais, segurança de dados e experiência de atendimento digital.
+O Belle VetCare é um projeto de CRM desenvolvido em Salesforce que estrutura e automatiza a operação completa de uma clínica veterinária.
+
+A solução centraliza o cadastro de tutores, pets, veterinários e consultas em uma única plataforma, implementando automações operacionais, segurança de dados e experiência de atendimento digital.
 
 Este projeto demonstra domínio prático em **Salesforce Administration**, **Salesforce Development**, modelagem de dados customizados, automação com Flow, segurança e implementação de bot de atendimento.
 
 ---
 
-## Contexto do Projeto
+# Contexto do Projeto
 
-### Desafio de Negócio
+## Desafio de Negócio
 
 A operação de uma clínica veterinária enfrenta desafios operacionais significativos:
 
@@ -24,7 +26,7 @@ A operação de uma clínica veterinária enfrenta desafios operacionais signifi
 - Ausência de indicadores para acompanhamento da rotina clínica
 - Necessidade de triagem automatizada para reduzir fricção no atendimento
 
-### Solução Proposta
+## Solução Proposta
 
 Uma plataforma CRM centralizada que:
 
@@ -36,72 +38,117 @@ Uma plataforma CRM centralizada que:
 
 ---
 
-## Arquitetura da Solução
+# Arquitetura da Solução
 
-### Estrutura de Objetos Customizados
+## Estrutura de Objetos Customizados
 
 A solução foi construída sobre quatro objetos principais que representam a jornada operacional da clínica:
 
-```
-Tutor__c ←→ Pet__c
+```text
+PetOwner__c ←→ Pet__c
   ↓           ↓
 Appointment__c ←→ Vet__c
 ```
 
-#### 1. Tutor__c (Responsável pelo Pet)
+### 1. Pet_Owner__c (Responsável pelo Pet)
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
-| Nome | Text | Nome do responsável |
+| Name | Text | Nome do responsável |
 | CPF | Text | CPF com fórmula/validação |
 | Email | Email | Email de contato |
-| Telefone | Number | Telefone para comunicação |
-| Endereço | Text | Endereço residencial |
+| Phone | Phone | Telefone para comunicação |
+| Address | Text | Endereço residencial |
 | CEP | Text | CEP com fórmula/validação |
-| Quantidade de Pets | Number | Total de animais do tutor |
+| Quantity Pet | Number | Total de animais do tutor |
 
-#### 2. Pet__c (Paciente)
+### 2. Pet__c (Paciente)
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
-| Nome | Text | Nome do animal |
-| Espécie | Text | Tipo de animal (cão, gato, etc) |
-| Raça | Text | Raça do animal |
-| Idade | Number | Idade em anos |
-| Sexo | Text | Sexo do animal |
-| Peso | Number | Peso em kg |
-| Tutor | Lookup | Referência ao Tutor__c |
+| PetName | Text | Nome do animal |
+| Species | Picklist | Tipo de animal (cão, gato, etc) |
+| Breed | Text | Raça do animal |
+| Age | Number | Idade em anos |
+| Sex | Text | Sexo do animal |
+| Weight | Number | Peso em kg |
+| Pet Owner | Lookup | Referência ao Pet_Owner__c |
 | Vet | Lookup | Veterinário responsável |
 
-#### 3. Vet__c (Veterinário)
+### 3. Vet__c (Veterinário)
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
-| Nome | Text | Nome do veterinário |
+| VetName | Text | Nome do veterinário |
 | CRMV | Number | Registro profissional |
 | Email | Email | Email corporativo |
-| Telefone | Number | Telefone para contato |
-| Especialidade | Picklist | Campo de especialização |
-| Dias Disponíveis | Picklist | Dias de atendimento |
-| Status | Picklist | Ativo ou Inativo |
+| Phone | Phone | Telefone para contato |
+| Specialty | Picklist | Campo de especialização |
+| Available Days | Picklist | Dias de atendimento |
+| Status | Picklist | Agendado, confirmado, cancelado, finalizado |
 
-#### 4. Appointment__c (Agendamento)
+### 4. Appointment__c (Agendamento)
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
-| Data | Date | Data da consulta |
-| Hora | Picklist | Horário do atendimento padronizado |
-| Tutor | Lookup | Responsável pelo pet |
+| Date | Date | Data da consulta |
+| Time | Picklist | Horário do atendimento padronizado |
+| PetOwner | Lookup | Responsável pelo pet |
 | Pet | Lookup | Animal a ser atendido |
-| Tipo de Atendimento | Picklist | Consulta, vacinação, cirurgia, exames, internação, emergência |
+| Service Type | Picklist | Consulta, vacinação, cirurgia, exames, internação, emergência |
 
 ---
 
-## Funcionalidades Principais
+# Fluxo Operacional Completo
 
-### 1. Automação de Notificações
+## 1. Primeiro Contato
 
-#### Vet Appointment Alert (Record-Triggered Flow)
+Cliente entra em contato através do bot ou recepção:
+
+```text
+Cliente → Bot/Atendente → Validação CPF → Cadastro ou Recuperação
+```
+
+## 2. Cadastro
+
+Se novo cliente:
+
+```text
+Criar Tutor__c → Criar Pet__c → Validar dados → Ativar perfil
+```
+
+## 3. Agendamento
+
+Cliente marca consulta:
+
+```text
+Selecionar Pet → Escolher Data/Hora → Tipo Atendimento → Confirmar
+                                              ↓
+                                    Appointment__c criado
+                                              ↓
+                                    Record-Triggered Flow dispara
+                                              ↓
+                                    E-mail enviado ao Vet
+```
+
+## 4. Acompanhamento
+
+Gestão operacional:
+
+```text
+Dashboard mostra volume do dia
+Relatório identifica gargalos
+Vet recebe alertas automáticos
+Sistema registra histórico completo
+```
+
+---
+
+# Funcionalidades Principais
+
+## 1. Automação de Notificações
+
+### Vet Appointment Alert (Record-Triggered Flow)
 
 Dispara automaticamente quando um agendamento é criado:
 
@@ -109,7 +156,7 @@ Dispara automaticamente quando um agendamento é criado:
 - Envia e-mail ao veterinário responsável
 - Inclui dados da consulta, pet, tutor, tipo e horário
 
-#### Vet Cancellation Alert (Record-Triggered Flow)
+### Vet Cancellation Alert (Record-Triggered Flow)
 
 Notifica o veterinário quando uma consulta é cancelada:
 
@@ -117,7 +164,9 @@ Notifica o veterinário quando uma consulta é cancelada:
 - Envia aviso de cancelamento
 - Mantém registro auditável da comunicação
 
-### 2. Validação de Dados
+---
+
+## 2. Validação de Dados
 
 O projeto implementa validações robustas para garantir integridade cadastral:
 
@@ -125,7 +174,25 @@ O projeto implementa validações robustas para garantir integridade cadastral:
 - **Validação de CEP**: Validação de formato postal
 - **Regras de Relacionamento**: Garante que agendamento tenha tutor e pet válidos
 
-### 3. Lightning App Customizado
+---
+
+## 3. Bot de Atendimento (Enhanced Bot)
+
+Bot implementado como porta de entrada do atendimento digital.
+
+### Bot Flows: Autolaunched Flow
+
+- **Bot Register PetOwner Pet**: Cadastro de pet e tutor responsável
+- **Bot Schedule Appointment**: Agendamento com validação
+- **Bot Validate PetOwner CPF**: Verificação de cadastro existente
+
+### Flow Omni Channel
+
+- **Bot Route to Belle Chat**: Transferência para atendente humano
+
+---
+
+## 4. Lightning App Customizado
 
 Interface de navegação organizada para operação da clínica com tabs:
 
@@ -136,13 +203,11 @@ Interface de navegação organizada para operação da clínica com tabs:
 - **Reports**: Relatórios operacionais
 - **Dashboards**: Indicadores gerenciais
 
-### 4. Bot de Atendimento (Enhanced)
+---
 
-Bot implementado como porta de entrada do atendimento digital.
+# Jornada do Cliente
 
-#### Jornada do Cliente
-
-```
+```text
 Menu Principal
 ├── Cadastrar Tutor e Pet
 │   ├── Coletam dados pessoais
@@ -158,38 +223,30 @@ Menu Principal
     └── Transfere para atendimento humano
 ```
 
-#### Bot Flows: Autolaunched flow
-
-- **Bot Tutor Registration**: Cadastro de tutor responsável
-- **Bot Pet Registration**: Cadastro do pet
-- **Bot Appointment Scheduling**: Agendamento com validação
-- **Bot Check Tutor CPF**: Verificação de cadastro existente
-- **Bot Transfer Agent**: Transferência para atendente humano
-
 ---
 
-## Camada de Segurança e Governança
+# Camada de Segurança e Governança
 
-### Modelo de Controle de Acesso
+## Modelo de Controle de Acesso
 
-#### Perfil: Ana Recepção
+### Perfil: Ana Recepção
 
 Específico para operação de recepção da clínica.
 
-#### Permissões Concedidas
+### Permissões Concedidas
 
 - Criar e editar tutores
 - Criar e editar pets
 - Criar e editar veterinários
 - Criar e editar agendamentos
 
-#### Restrições Aplicadas
+### Restrições Aplicadas
 
 - Sem permissão de delete para nenhum objeto
 - Sem acesso visual ao campo CRMV dos veterinários
 - Acesso limitado apenas aos registros operacionais necessários
 
-#### Field-Level Security
+### Field-Level Security
 
 O campo CRMV (Conselho Regional de Medicina Veterinária) é restrito:
 
@@ -205,44 +262,48 @@ O campo CRMV (Conselho Regional de Medicina Veterinária) é restrito:
 
 ---
 
-## Análise e Relatórios
+# Análise e Relatórios
 
-### Custom Report Type
+## Custom Report Type
 
 Baseado no objeto Appointment__c para estruturar dados analíticos.
 
-### Relatórios Implementados
+## Relatórios Implementados
 
-#### Consultas por Dia
+### Consultas por Dia
+
 - Exibe volume diário de consultas
 - Útil para acompanhamento operacional
 
-#### Consultas por Mês
+### Consultas por Mês
+
 - Agrega dados mensais
 - Identifica tendências de atendimento
 
-#### Consultas por Veterinário
+### Consultas por Veterinário
+
 - Distribuição de carga de trabalho
 - Identifica especialista mais demandado
 
-#### Tipos de Atendimento por Mês
+### Tipos de Atendimento por Mês
+
 - Categoriza atendimentos (consulta, vacinação, cirurgia)
 - Oferece visão de demanda por tipo de serviço
 
-### Dashboard Operacional
+## Dashboard Operacional
 
 Componentes gráficos para gestão em tempo real:
 
 | Componente | Tipo | Métrica |
 |-----------|------|--------|
 | Line Chart | Gráfico de linha | Quantidade de consultas por dia |
-| Metric Chart | Card | Total de consultas no mês |
-| Bar Chart | Gráfico de barras | Veterinário com mais consultas |
+| Horizontal Bar Chart | Total de consultas no mês |
+| Horizontal Bar Chart | Gráfico de barras | Veterinário com mais consultas |
 | Donut Chart | Gráfico de pizza | Distribuição de tipos de atendimento |
 
 ---
 
-## Stack Tecnológico
+# Stack Tecnológico
 
 | Componente | Tecnologia |
 |-----------|-----------|
@@ -255,54 +316,9 @@ Componentes gráficos para gestão em tempo real:
 
 ---
 
-## Fluxo Operacional Completo
+# Competências Demonstradas
 
-### 1. Primeiro Contato
-
-Cliente entra em contato através do bot ou recepção:
-
-```
-Cliente → Bot/Atendente → Validação CPF → Cadastro ou Recuperação
-```
-
-### 2. Cadastro
-
-Se novo cliente:
-
-```
-Criar Tutor__c → Criar Pet__c → Validar dados → Ativar perfil
-```
-
-### 3. Agendamento
-
-Cliente marca consulta:
-
-```
-Selecionar Pet → Escolher Data/Hora → Tipo Atendimento → Confirmar
-                                              ↓
-                                    Appointment__c criado
-                                              ↓
-                                    Record-Triggered Flow dispara
-                                              ↓
-                                    E-mail enviado ao Vet
-```
-
-### 4. Acompanhamento
-
-Gestão operacional:
-
-```
-Dashboard mostra volume do dia
-Relatório identifica gargalos
-Vet recebe alertas automáticos
-Sistema registra histórico completo
-```
-
----
-
-## Competências Demonstradas
-
-### Salesforce Administration
+## Salesforce Administration
 
 - Modelagem de objetos customizados
 - Criação e configuração de campos
@@ -313,7 +329,7 @@ Sistema registra histórico completo
 - Criação de custom report types
 - Design de relatórios e dashboards
 
-### Salesforce Automation & Development
+## Salesforce Automation & Development
 
 - Construção de lógica de negócio com Flow
 - Record-Triggered Flows para notificações
@@ -323,7 +339,7 @@ Sistema registra histórico completo
 - Desenho de fluxo de agendamento
 - Implementação de atendimento digital com bot
 
-### Visão de Negócio
+## Visão de Negócio
 
 - Tradução de operação clínica em arquitetura CRM
 - Organização de jornada de atendimento
@@ -332,7 +348,7 @@ Sistema registra histórico completo
 
 ---
 
-## Resultados Entregues
+# Resultados Entregues
 
 O projeto Belle VetCare consolidou em uma única plataforma:
 
@@ -347,16 +363,16 @@ O projeto Belle VetCare consolidou em uma única plataforma:
 
 ---
 
-## Conclusão
+# Conclusão
 
 O Belle VetCare CRM representa um case completo de desenvolvimento Salesforce que integra modelagem de dados, segurança, automação, analytics e atendimento digital. O projeto posiciona para vagas com foco em **Salesforce Administrator** ou **Salesforce Developer/Automation**, demonstrando domínio prático da plataforma em diferentes camadas da solução.
 
 ---
 
-## Informações do Projeto
+# Informações do Projeto
 
 - **Tipo**: Projeto de Portfolio / Case Estudo
-- **Plataforma**: Salesforce
+- **Plataforma**: Salesforce Developer Org
 - **Escopo**: CRM Customizado
 - **Área de Negócio**: Saúde Animal / Clínica Veterinária
 - **Status**: Completo e Funcional
@@ -365,4 +381,4 @@ O Belle VetCare CRM representa um case completo de desenvolvimento Salesforce qu
 
 **Desenvolvido como demonstração prática de competências em Salesforce Administration e Development**
 
-Elaborado por Thiago de Souza - Salesforce Developer & Administrator
+Elaborado por **Thiago de Souza** — Salesforce Developer & Administrator
