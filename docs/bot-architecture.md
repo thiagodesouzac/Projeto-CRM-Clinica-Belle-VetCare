@@ -14,12 +14,12 @@ A arquitetura do bot foi desenhada para integrar experiência do usuário, valid
 
 ---
 
-# 1. Objetivo do Bot
+# 1. Objetivo do Einstein Bot
 
-Ao entrar em contato com a clínica, o usuário visualiza um menu principal com cinco opções:
+Ao entrar em contato com a clínica, o usuário visualiza um menu principal com quatro opções:
 
-1. **Cadastrar Tutor e Pet**
-2. **Agendar atendimento**
+1. **Cadastrar**
+2. **Agendar Consulta**
 3. **Falar com Atendente**
 4. **Encerrar**
 
@@ -36,7 +36,7 @@ O usuário precisa realizar o cadastro do tutor e do pet antes de solicitar um a
 
 Com base nisso, o fluxo do bot funciona da seguinte forma:
 
-- ao selecionar **Agendar atendimento**, o bot solicita o CPF do tutor;
+- ao selecionar **Agendar consulta**, o bot solicita o CPF do tutor;
 - o CPF é validado para verificar se o tutor já possui cadastro;
 - se o CPF for reconhecido, o usuário pode prosseguir com o agendamento;
 - se o CPF não estiver cadastrado, o usuário é direcionado para a etapa de cadastro;
@@ -44,7 +44,7 @@ Com base nisso, o fluxo do bot funciona da seguinte forma:
 
 ---
 
-# 3. Jornada do Cliente no Bot
+# 3. Jornada do Cliente no Einstein Bot
 
 A jornada principal foi desenhada para conduzir o cliente do primeiro contato até a solicitação do atendimento.
 
@@ -79,6 +79,7 @@ Criar o cadastro do tutor e pet diretamente pela jornada do bot.
 - CEP
 - Nome do pet
 - Espécie do pet
+- Raça
 
 ### Papel na arquitetura
 Esse flow representa a primeira etapa da base cadastral do cliente no CRM e garante que o pet exista na base antes do agendamento.
@@ -120,10 +121,10 @@ Esse flow materializa a etapa de agendamento dentro da jornada digital e conecta
 
 ---
 
-## 4.4 Bot Transfer Chat
+## 4.4 Bot Route to Belle Chat
 
 ### Objetivo
-Transferir o atendimento para um atendente por número de telefone.
+Transferir o atendimento para um atendente humano via Omni-Channel e Agentforce.
 
 ### Papel na arquitetura
 Esse fluxo oferece uma saída humana para o atendimento quando o usuário deseja falar com um atendente da clínica.
@@ -163,7 +164,7 @@ O bot foi incluído no Belle VetCare CRM para demonstrar a capacidade de constru
 
 ---
 
-# 7. Resultado da Arquitetura do Bot
+# 7. Resultado da Arquitetura do Einstein Bot
 
 A camada de bot do Belle VetCare CRM amplia a solução além da operação interna da clínica e mostra como o Salesforce pode ser utilizado para criar uma jornada digital de atendimento.
 
@@ -173,5 +174,6 @@ O resultado é uma experiência que conecta:
 - **validação**
 - **agendamento**
 - **atendimento humano**
+- **encerrar**
 
 em um único fluxo operacional, apoiado por automações dentro da plataforma.
