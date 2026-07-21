@@ -2,37 +2,36 @@
 
 ## 1. Propósito
 
-O flow tem como objetivo direcionar (rotear) o atendimento de mensagens recebidas via Omni-Channel para o bot avançado **Belle Chat**, garantindo que as interações de mensagens sejam tratadas automaticamente por esse bot no momento em que o trabalho entra na fila.
+O flow tem como objetivo direcionar (rotear) o atendimento de mensagens recebidas via Omni-Channel para o Einstein bot avançado **Belle Chat**, garantindo que as interações de mensagens sejam tratadas automaticamente por esse bot no momento em que o trabalho entra na fila.
 
 ## 2. Tipo de Flow
 
-- **Omni-Channel Flow** (Flow do tipo "Start" com evento de disparo Omni-Channel).
+- **Omni-Channel Flow** 
 - Utilizado como flow de roteamento de trabalho (Routing Flow), acionado quando um novo item de trabalho é criado no Omni-Channel.
 
 ## 3. Estrutura do Flow
 
-O flow é composto por três elementos sequenciais:
-
 1. **Start (Omni-Channel Flow)** – ponto de entrada do flow.
 
-2. **Route to Belle Chat (Route Work)** – elemento central responsável pela lógica de roteamento.
-   - Label: `Route to Belle Chat`
-   - API Name: `RoutingAction`
-   - Descrição: "Routes all messages to your enhanced bot."
+2. **Flow Transfer to Human Routing (Route Work)** – elemento central responsável pela lógica de roteamento.
+   - Label: `Route Transfer to Human Support`
+   - API Name: `Flow_Human_Routing`
+   - Descrição: "Encaminha a mensagem para o agentforce"
 
 3. **End** – encerramento do flow.
 
 ## 4. Variáveis de Entrada
 
-Definidas no elemento **Route to Belle Chat**:
+Definidas no elemento **Flow Transfer to Human Routing**:
 
 | Campo | Valor                            |
 |-------|----------------------------------|
-| How Many Work Records to Route? | Single |
+| How Many Work Records to Route | Single |
 | Record ID Variable | `{!recordId}` |
 | Service Channel | Messaging |
-| Route To | Queue |
-| Enhanced Bot | Belle VetCare Queue |
+| Route To | Agentforce Service Agent
+| Enhanced Bot | Agentforce Belle VetCare |
+|Fallback Queue | Belle VetCare Human Support |
 
 ## 5. Variáveis de Saída
 
@@ -54,8 +53,7 @@ O elemento **Route Work** não expõe variáveis de saída explícitas visíveis
 
 ## 9. Resumo
 
-O flow **"Route to Belle Chat - V1"** é um flow de roteamento Omni-Channel simples e direto, com apenas três etapas (Start → Route Work → End). 
+O flow **"Flow Transfer to Human Routing"** é um flow de roteamento Omni-Channel simples e direto, com apenas três etapas (Start → Route Work → End). 
 
 Sua função é enviar mensagens recebidas pelo canal de Messaging para o bot **Belle Chat**. 
 
-O flow está **ativo**, mas possui uma pendência importante: o **Fallback Queue ID** ainda não foi configurado (mantém o valor padrão `[REPLACE ME]`), o que pode comprometer o atendimento em casos de falha no roteamento para o bot.

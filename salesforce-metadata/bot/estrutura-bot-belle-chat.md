@@ -67,17 +67,6 @@ Benefícios
 - evita abandono do atendimento
 - mantém continuidade da conversa
 
-# Limitações do Preview de Conversa:
-
-- O preview de teste tem limitações.
-- Não consegue transferir para um agente real. 
-- Conectar ao Omni-Channel.
-- Verificar agentes online.
-- Verificar Presence Status.
-- Verificar filas.
-- Criar uma sessão real de Messaging.
-- Simular aceitação do agente.
-
 ### 4. Encerramento
 Finaliza a sessão de forma amigável e informa que uma nova mensagem inicia outro atendimento.
 
@@ -109,11 +98,13 @@ Menu Principal
    │      ▼
    │  Flow Agendar Consulta
    │      ▼
-   │  Realiza o agendamento   │
+   │  Realiza o agendamento  
    │
    ├── Falar com Atendente
    |       ▼
    |   Omni-Channel 
+   |       ▼
+   |   AgentForce
    |
    └── Encerrar 
 ```

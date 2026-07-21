@@ -65,7 +65,7 @@ A jornada principal foi desenhada para conduzir o cliente do primeiro contato at
 
 A solução do bot foi estruturada com apoio de flows autolaunched, responsáveis por executar as ações de cadastro, validação e agendamento.
 
-## 4.1 Bot Register PetOwner Pet
+## 4.1 Flow Bot Register PetOwner Pet
 
 ### Objetivo
 Criar o cadastro do tutor e pet diretamente pela jornada do bot.
@@ -86,7 +86,7 @@ Esse flow representa a primeira etapa da base cadastral do cliente no CRM e gara
 
 ---
 
-## 4.2 Bot Validate PetOwner CPF
+## 4.2 Flow Bot Validate PetOwner CPF
 
 ### Objetivo
 Busca e valida se o tutor informado já está cadastrado na clínica.
@@ -102,7 +102,7 @@ Esse flow sustenta a regra central da jornada, impedindo que o agendamento seja 
 
 ---
 
-## 4.3 Bot Schedule Appointment
+## 4.3 Flow Bot Schedule Appointment
 
 ### Objetivo
 Realizar o agendamento do atendimento pelo bot.
@@ -121,7 +121,7 @@ Esse flow materializa a etapa de agendamento dentro da jornada digital e conecta
 
 ---
 
-## 4.4 Bot Route to Belle Chat
+## 4.4 Flow Transfer to Human Routing
 
 ### Objetivo
 Transferir o atendimento para um atendente humano via Omni-Channel e Agentforce.

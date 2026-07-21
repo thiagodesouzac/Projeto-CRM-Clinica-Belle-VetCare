@@ -175,19 +175,19 @@ O projeto implementa validações robustas para garantir integridade cadastral:
 
 ---
 
-## 3. Bot de Atendimento (Enhanced Bot)
+## 3. Bot de Atendimento (Einstein Bot)
 
 Bot implementado como porta de entrada do atendimento digital.
 
-### Bot Flows: Autolaunched Flow
+### Flows: Autolaunched Flow
 
-- **Bot Register PetOwner Pet**: Cadastro de pet e tutor responsável
-- **Bot Schedule Appointment**: Agendamento com validação
-- **Bot Validate PetOwner CPF**: Verificação de cadastro existente
+- **Flow Bot Register PetOwner Pet**: Cadastro de pet e tutor responsável
+- **Flow Bot Schedule Appointment**: Agendamento com validação
+- **Flow Bot Validate PetOwner CPF**: Verificação de cadastro existente
 
-### Flow Omni Channel
+### Omni Channel Flow
 
-- **Bot Route to Belle Chat**: Transferência para atendente humano
+- **Flow Transfer to Human Routing**: Transferência para atendente humano via Agentforce
 
 ---
 
@@ -362,7 +362,7 @@ Os **Dynamic Forms** foram implementados para personalizar dinamicamente a inter
 
 Essa abordagem permitiu segmentar a visualização dos campos sem a necessidade de múltiplos Page Layouts, proporcionando uma interface mais intuitiva, organizada e alinhada às responsabilidades de cada função dentro da aplicação.
 
-> **Observação:** Os Dynamic Forms foram utilizados em conjunto com **Field-Level Security (FLS)**. Enquanto os Dynamic Forms controlam a experiência de visualização da interface, o FLS garante a proteção efetiva dos dados em nível de campo.
+> Os Dynamic Forms foram utilizados em conjunto com **Field-Level Security (FLS)**.
 
 ### Page Layout
 

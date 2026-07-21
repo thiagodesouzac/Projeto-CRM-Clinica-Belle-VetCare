@@ -13,7 +13,7 @@ As automações do projeto foram estruturadas em duas frentes:
 
 # 1. Flows Operacionais da Clínica
 
-## 1.1 Vet Appointment Alert
+## 1.1 Flow Vet Appointment Alert
 
 ### Tipo
 **Record-Triggered Flow**
@@ -44,7 +44,7 @@ Essa automação reduz dependência de comunicação manual e melhora a visibili
 
 ---
 
-## 1.2 Vet Cancellation Alert
+## 1.2 Flow Vet Cancellation Alert
 
 ### Tipo
 **Record-Triggered Flow**
@@ -67,13 +67,13 @@ A automação melhora a comunicação da clínica e reduz risco de falhas operac
 
 ---
 
-# 2. Flows do Bot
+# 2. Flows do Einstein Bot
 
 Além dos flows operacionais da clínica, o projeto utiliza **Autolaunched Flows** para sustentar a jornada do atendimento digital via bot.
 
 ---
 
-## 2.1 Bot Register Tutor Pet
+## 2.1 Flow Bot Register PetOwner Pet
 
 ### Tipo
 **Autolaunched Flow**
@@ -96,7 +96,7 @@ Esse flow permite que o usuário realize o cadastro do responsável pelo pet sem
 
 ---
 
-## 2.2 Bot Find Tutor CPF
+## 2.2 Flow Bot Validate PetOwner CPF
 
 ### Tipo
 **Autolaunched Flow**
@@ -112,7 +112,7 @@ Esse flow apenas faz a verificação se o tutor existe no sistema pelo número d
 
 ---
 
-## 2.3 Bot Scheduling
+## 2.3 Flow Bot Schedule Appointment
 
 ### Tipo
 **Autolaunched Flow**
@@ -131,16 +131,6 @@ Realizar o agendamento do atendimento por meio do bot, validando previamente os 
 
 ### Papel na jornada
 Esse flow executa a parte central da jornada digital, permitindo que o cliente conclua o agendamento de forma automatizada.
-
----
-
-## 2.5 Bot Transfer Chat
-
-### Objetivo
-Transferir o atendimento do bot para um atendente humano.
-
-### Papel na jornada
-Esse fluxo garante uma alternativa de atendimento humano quando o usuário deseja sair do fluxo automatizado e falar com a atendente da clínica.
 
 ---
 
