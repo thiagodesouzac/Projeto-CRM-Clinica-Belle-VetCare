@@ -175,7 +175,7 @@ O projeto implementa validações robustas para garantir integridade cadastral:
 
 ---
 
-## 3. Bot de Atendimento (Einstein Bot)
+## 3. Agent de Atendimento (Agent Service)
 
 Bot implementado como porta de entrada do atendimento digital.
 
@@ -184,10 +184,6 @@ Bot implementado como porta de entrada do atendimento digital.
 - **Flow Bot Register PetOwner Pet**: Cadastro de pet e tutor responsável
 - **Flow Bot Schedule Appointment**: Agendamento com validação
 - **Flow Bot Validate PetOwner CPF**: Verificação de cadastro existente
-
-### Omni Channel Flow
-
-- **Flow Transfer to Human Routing**: Transferência para atendente humano via Agentforce
 
 ---
 
@@ -217,9 +213,7 @@ Menu Principal
 │   ├── Solicita CPF para validação
 │   ├── Se existe cadastro → segue agendamento
 │   └── Se não existe → direciona para cadastro
-│
-└── Falar com Atendente
-    └── Transfere para atendimento humano
+
 ```
 
 ---

@@ -6,7 +6,7 @@ A modelagem de dados do Belle VetCare CRM foi criada para representar a operaç�
 
 A solução foi construída com base em quatro objetos principais:
 
-- `Tutor__c`
+- `Pet_Owner__c`
 - `Pet__c`
 - `Vet__c`
 - `Appointment__c`
@@ -16,7 +16,7 @@ Esses objetos sustentam os principais processos do CRM:
 - cadastro de tutores;
 - cadastro de pets;
 - gestão de veterinários;
-- agendamento de consultas;
+- agendamento e cancelamento de consultas;
 - relacionamento entre cliente, animal, profissional e atendimento.
 
 ---
@@ -40,8 +40,6 @@ O objeto `Pet_Owner__c` concentra as informações cadastrais do cliente e serve
 | Phone | Phone |
 | Email | Email |
 | CEP | Text com fórmula de validação |
-| Quantity Pet | Number |
-| Pet | Lookup Relationship |
 
 ### Papel no processo
 O tutor é o ponto de entrada do relacionamento com a clínica. Seu cadastro é utilizado tanto no fluxo operacional da recepção quanto na jornada automatizada do bot.
@@ -58,13 +56,11 @@ O objeto `Pet__c` foi criado para registrar os dados do animal e manter seu vín
 ### Campos criados
 
 | Campo | Tipo |
-|---|---|
-| Age | Number |
+|-------|------|
 | Breed | Text |
 | Name | Text |
 | Species | Text |
-| Sex | Text |
-| Weight | Number |
+| Gender | Text |
 | Pet Owner | Lookup Relationship |
 | Vet | Lookup Relationship |
 
@@ -124,7 +120,7 @@ O agendamento representa o evento operacional mais importante da jornada da clí
 
 # Relacionamentos do Projeto
 
-## Relacionamento entre Tutor__c e Pet__c
+## Relacionamento entre Pet_Owner__c e Pet__c
 O relacionamento principal da solução foi modelado por meio do campo **Tutor** no objeto `Pet__c`, permitindo vincular cada pet ao seu responsável.
 
 ### Regra funcional
@@ -141,7 +137,7 @@ Esse relacionamento permite associar o animal a um profissional da clínica dent
 
 ---
 
-## Relacionamento entre Appointment__c, Tutor__c e Pet__c
+## Relacionamento entre Appointment__c, Pet_Owner__c e Pet__c
 O objeto `Appointment__c` foi desenhado para conectar o agendamento ao tutor e ao pet.
 
 ### Regra funcional
@@ -171,9 +167,9 @@ O atendimento é registrado no objeto `Appointment__c`, vinculando tutor, pet e 
 
 A estrutura de dados do Belle VetCare CRM foi desenhada para conectar os principais elementos da operação da clínica dentro do Salesforce:
 
-- **Tutor** → responsável pelo atendimento;
+- **Pet Owner** → responsável pelo atendimento;
 - **Pet** → paciente da clínica;
 - **Vet** → profissional responsável pelo cuidado;
 - **Appointment** → registro do atendimento agendado.
 
-Essa modelagem organiza a operação de ponta a ponta e cria uma base sólida para automações, segurança, analytics e atendimento digital via bot.
+Essa modelagem organiza a operação de ponta a ponta e cria uma base sólida para automações, segurança, analytics e atendimento digital via Agent.

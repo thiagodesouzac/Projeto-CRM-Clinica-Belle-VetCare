@@ -21,8 +21,8 @@ Representa o cadastro do Pet.
 | Age | Age__c | Number(16, 2) |
 | Breed | Breed__c | Text |
 | Pet Name | Name | Text |
-| Pet Species | Pet_Species__c | Picklist |
-| Sex | Sex__c | Picklist |
+| Pet Species | Pet_Species__c | Picklist (Cão, Gato, Coelho, Aves e Répteis) | 
+| Gender | Gender__c | Picklist (Macho e Fêmea) |
 | PetOwner | Pet_Owner__c | Lookup(PetOwner) |
 | Vet | Vet__c | Lookup(Vet) |
 | Weight | Weight__c | Number(16, 2) |

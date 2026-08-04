@@ -33,7 +33,7 @@ A solução foi estruturada para atender os principais processos operacionais da
 - **Cadastro de veterinários**: controle de dados cadastrais, especialidade, disponibilidade e status;
 - **Agendamento de consultas**: criação e acompanhamento de atendimentos;
 - **Automação operacional**: envio de alertas por e-mail relacionados a consultas;
-- **Atendimento digital**: jornada automatizada via bot para cadastro, validação de CPF, agendamento e transferência para atendimento humano;
+- **Atendimento digital**: jornada automatizada via Agent para cadastro, validação de CPF, agendamento,   cancelamento e transferência para atendimento humano;
 - **Análise operacional**: relatórios e dashboard com indicadores de consultas e atendimentos.
 
 ---
@@ -42,14 +42,14 @@ A solução foi estruturada para atender os principais processos operacionais da
 
 A arquitetura do CRM foi construída com base em quatro objetos principais:
 
-- `Tutor__c`
+- `Pet_Owner__c`
 - `Pet__c`
 - `Vet__c`
 - `Appointment__c`
 
 Essa estrutura foi definida para representar a operação da clínica de forma organizada e escalável, separando responsabilidades por domínio de negócio:
 
-### Tutor__c
+### Pet_Owner__c
 Representa o responsável pelo pet e concentra os dados cadastrais do cliente da clínica.
 
 ### Pet__c
@@ -83,21 +83,20 @@ A modelagem e as automações foram pensadas para sustentar a jornada principal 
 
 Além da camada operacional do CRM, o projeto inclui um **Enhanced Bot** para automatizar parte da jornada do cliente.
 
-O bot foi desenhado com cinco opções principais de atendimento:
+O Agent foi desenhado com quatro opções principais de atendimento:
 
 - **Cadastrar Tutor e Pet**
-- **Agendar atendimento**
-- **Cancelar Consulta**
-- **Falar com atendente**
-- **Encerrar**
+- **Agendar consulta**
+- **Cancelar consulta**
+- **Falar com atendente humano**
 
 A lógica de atendimento foi estruturada da seguinte forma:
 
 - o tutor precisa estar cadastrado antes de solicitar um agendamento;
-- ao escolher agendar, o bot solicita o CPF do tutor;
+- ao escolher agendar, o agent solicita o CPF do tutor;
 - se o CPF existir, o atendimento segue para agendamento;
 - se o CPF não existir, o usuário é direcionado para o fluxo de cadastro;
-- se o usuário quiser falar com atendente, o bot transfere o atendimento.
+- se o usuário quiser falar com atendente humano, o agent transfere o atendimento.
 
 ---
 
@@ -115,6 +114,8 @@ O projeto reúne componentes de diferentes frentes da plataforma Salesforce:
 - profile;
 - permission set;
 - field-level security;
+- validation rule;
+- owd;
 - restrições de acesso por perfil operacional.
 
 ### Camada de Automação
@@ -128,10 +129,11 @@ O projeto reúne componentes de diferentes frentes da plataforma Salesforce:
 - dashboard com indicadores da clínica.
 
 ### Camada de Atendimento Digital
-- Enhanced Bot;
+- Agent service;
 - validação de CPF;
 - cadastro de tutor e pet;
 - agendamento automatizado;
+- cancelamento automatizado;
 - transferência para atendimento humano.
 
 ---

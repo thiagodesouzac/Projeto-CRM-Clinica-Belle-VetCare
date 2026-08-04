@@ -67,19 +67,19 @@ A automação melhora a comunicação da clínica e reduz risco de falhas operac
 
 ---
 
-# 2. Flows do Einstein Bot
+# 2. Flows do Agent Service
 
 Além dos flows operacionais da clínica, o projeto utiliza **Autolaunched Flows** para sustentar a jornada do atendimento digital via bot.
 
 ---
 
-## 2.1 Flow Bot Register PetOwner Pet
+## 2.1 Flow Register Owner and Pet
 
 ### Tipo
 **Autolaunched Flow**
 
 ### Objetivo
-Criar o cadastro do tutor diretamente pela jornada do bot.
+Criar o cadastro do tutor diretamente pela jornada do agent.
 
 ### Campos utilizados
 - Nome
@@ -90,19 +90,21 @@ Criar o cadastro do tutor diretamente pela jornada do bot.
 - CEP
 - Nome do pet
 - Espécie do pet
+- Raça
+- Gênero
 
 ### Papel na jornada
 Esse flow permite que o usuário realize o cadastro do responsável pelo pet sem depender de atendimento manual da recepção.
 
 ---
 
-## 2.2 Flow Bot Validate PetOwner CPF
+## 2.2 Flow Validate PetOwner
 
 ### Tipo
 **Autolaunched Flow**
 
 ### Objetivo
-Busca e verifica o CPF se o tutor existe na jornada do bot.
+Busca e verifica o CPF se o tutor existe na jornada do agent.
 
 ### Campos utilizados
 - Número do CPF
@@ -112,25 +114,56 @@ Esse flow apenas faz a verificação se o tutor existe no sistema pelo número d
 
 ---
 
-## 2.3 Flow Bot Schedule Appointment
+## 2.3 Flow Scheduling
 
 ### Tipo
 **Autolaunched Flow**
 
 ### Objetivo
-Realizar o agendamento do atendimento por meio do bot, validando previamente os dados do tutor e do pet.
+O Flow Schedule Appointment é responsável por realizar o agendamento completo de consultas veterinárias na Clínica Belle VetCare.
+
+Este Flow centraliza toda a lógica de negócio necessária para criar um agendamento, desde a identificação do tutor até a geração da consulta, garantindo que apenas tutores e pets cadastrados possam realizar um agendamento.
 
 ### Estrutura do flow
-- captura do CPF para verificação;
-- busca do tutor por CPF;
-- captura do nome do pet;
-- captura da espécie;
-- captura do tipo de atendimento;
-- captura da data do atendimento;
-- captura da hora do atendimento.
+
+O Flow é responsável por:
+
+- Identificar o tutor a partir do CPF informado.
+- Verificar se o tutor possui cadastro ativo.
+- Localizar o pet informado pelo usuário.
+- Confirmar que o pet pertence ao tutor identificado.
+- Criar o registro da consulta veterinária.
+- Definir automaticamente o status inicial da consulta.
+- Gerar o código de referência do agendamento.
+- Retornar o resultado da operação para o agente.
 
 ### Papel na jornada
 Esse flow executa a parte central da jornada digital, permitindo que o cliente conclua o agendamento de forma automatizada.
+
+---
+
+## 2.4 Flow Cancel Appointment
+
+### Tipo
+**Autolaunched Flow**
+
+### Objetivo
+O Flow Cancel Appointment é responsável por localizar e cancelar consultas veterinárias previamente agendadas na Clínica Belle VetCare.
+
+O Flow garante que apenas a consulta correta seja cancelada por meio da validação das informações fornecidas pelo usuário, proporcionando maior segurança durante o processo.
+
+### Estrutura do flow
+
+O Flow é responsável por:
+
+- Localizar o agendamento utilizando o código de referência.
+- Confirmar que os dados informados correspondem à consulta cadastrada.
+- Validar as informações do pet e da consulta.
+- Atualizar o status do agendamento para cancelado.
+- Retornar o resultado da operação ao agente.
+
+### Papel na jornada
+Esse flow executa a parte central da jornada digital, permitindo que o cliente conclua o cancelamento de forma automatizada.
 
 ---
 
