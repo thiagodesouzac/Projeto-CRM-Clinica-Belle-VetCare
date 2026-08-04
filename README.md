@@ -67,10 +67,10 @@ Appointment__c ←→ Vet__c
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
 | PetName | Text | Nome do animal |
-| Species | Picklist | Tipo de animal (cão, gato, etc) |
-| Breed | Text | Raça do animal |
+| Species | Picklist | Tipo (cão, gato, etc) |
+| Breed | Text | Raça |
 | Age | Number | Idade em anos |
-| Sex | Text | Sexo do animal |
+| Gender | Text | Gênero |
 | Weight | Number | Peso em kg |
 | Pet Owner | Lookup | Referência ao Pet_Owner__c |
 | Vet | Lookup | Veterinário responsável |
