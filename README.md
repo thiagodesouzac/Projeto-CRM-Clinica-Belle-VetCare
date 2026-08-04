@@ -181,9 +181,9 @@ Bot implementado como porta de entrada do atendimento digital.
 
 ### Flows: Autolaunched Flow
 
-- **Flow Bot Register PetOwner Pet**: Cadastro de pet e tutor responsável
-- **Flow Bot Schedule Appointment**: Agendamento com validação
-- **Flow Bot Validate PetOwner CPF**: Verificação de cadastro existente
+- **Flow Register Owner and Pet**: Cadastro de pet e tutor responsável
+- **Flow Scheduling**: Agendamento com validação
+- **Flow Validate PetOwner**: Análise de cadastro existente
 
 ---
 
