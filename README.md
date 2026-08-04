@@ -455,7 +455,7 @@ Componentes gráficos para gestão em tempo real:
 | Automação | Flow (Record-Triggered e Autolaunched) |
 | Interface | Lightning (App, Pages, Components, Layout) |
 | Relatórios | Salesforce Reports & Dashboards |
-| Bot | Salesforce Enhanced Bot |
+| Bot | Agent Service |
 | Banco de Dados | Salesforce Objects e Fields |
 
 ---
