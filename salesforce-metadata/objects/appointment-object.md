@@ -18,15 +18,15 @@ Representa o agendamento de consultas da clínica veterinária.
 
 | Campo | API | Tipo |
 |--------|-----|------|
-| Data | Date__c | Date |
+| Date | Date__c | Date |
 | Email Vet | Email_Vet__c | Email |
 | Note | Notes__c | Text Area |
 | Pet | Pet__c | Lookup(Pet) |
-| Reference| Name | Auto Number |
+| Vet Medical| Name | Auto Number |
 | Service Type | Service_Type__c | Picklist |
 | Species | Species__c | Picklist |
 | Status | Status__c | Picklist |
-| Time | Time__c | Picklist |
+| Time | Time__c | Time |
 | PetOwner | Pet_Owner__c | Lookup(PetOwner) |
 | Vet | Vet__c | Lookup(Vet)
 
