@@ -1,68 +1,73 @@
-import { LightningElement, wire } from 'lwc';
-import getAppointmentsByDate from '@salesforce/apex/VetAppointmentController.getAppointmentsByDate';
+import { LightningElement, wire, track } from 'lwc';
+import { refreshApex } from '@salesforce/apex';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+
+// Referências de Schema (Garante integridade física dos campos)
+import APPOINTMENT_OBJECT from '@salesforce/schema/Appointment__c';
+import DATE_FIELD from '@salesforce/schema/Appointment__c.Date__c';
+import TIME_FIELD from '@salesforce/schema/Appointment__c.Time__c';
+import SERVICE_FIELD from '@salesforce/schema/Appointment__c.Service_Type__c';
+import STATUS_FIELD from '@salesforce/schema/Appointment__c.Status__c';
+import VET_FIELD from '@salesforce/schema/Appointment__c.Vet__c';
+import OWNER_FIELD from '@salesforce/schema/Appointment__c.Pet_Owner__c';
+import PET_FIELD from '@salesforce/schema/Appointment__c.Pet__c';
+import SPECIES_FIELD from '@salesforce/schema/Appointment__c.Species__c';
+
+import getDailyAppointments from '@salesforce/apex/VetAppointmentController.getDailyAppointments';
 
 const COLUMNS = [
-    { label: 'Time', fieldName: 'FormattedTime', type: 'text' },
-    { label: 'Vet', fieldName: 'VetName', type: 'text' },
-    { label: 'Service Type', fieldName: 'Service_Type__c', type: 'text' },
-    { label: 'Species', fieldName: 'Species__c', type: 'text' }
+    { label: 'Hora', fieldName: 'Time__c', type: 'text', initialWidth: 100 },
+    { label: 'Pet', fieldName: 'PetName', type: 'text' },
+    { label: 'Espécie', fieldName: 'Species__c', type: 'text' },
+    { label: 'Tutor', fieldName: 'OwnerName', type: 'text' },
+    { label: 'Veterinária(o)', fieldName: 'VetName', type: 'text' },
+    { label: 'Tipo', fieldName: 'Service_Type__c', type: 'text' },
+    { label: 'Status', fieldName: 'Status__c', type: 'text' }
 ];
 
-export default class VetDailyAppointment extends LightningElement {
-
+export default class VetDailyAppointments extends LightningElement {
     columns = COLUMNS;
-    selectedDate = this.getTodayLocalISODate();
-    appointments = [];
-    errorMessage;
+    @track appointments = [];
+    @track isModalOpen = false;
+    wiredAppointmentsResult;
 
-    @wire(getAppointmentsByDate, { selectedDate: '$selectedDate' })
-    wiredAppointments({ data, error }) {
-        if (data) {
-            this.appointments = data.map((appt) => ({
-                ...appt,
-                VetName: appt.Vet__r ? appt.Vet__r.Name : '',
-                FormattedTime: this.formatTime(appt.Time__c)
-            }));
+    // Propriedades expostas para o Form nativo
+    objectApiName = APPOINTMENT_OBJECT;
+    fields = [DATE_FIELD, TIME_FIELD, PET_FIELD, SPECIES_FIELD, OWNER_FIELD, VET_FIELD, SERVICE_FIELD, STATUS_FIELD];
 
-            this.errorMessage = undefined;
-
-        } else if (error) {
-            this.appointments = [];
-            this.errorMessage =
-                'Não foi possível carregar os agendamentos. Tente novamente.';
-
-            console.error(
-                'Erro ao buscar agendamentos:',
-                error
-            );
+    @wire(getDailyAppointments)
+    wiredAppointments(result) {
+        this.wiredAppointmentsResult = result;
+        if (result.data) {
+            // Flattening: Transforma caminhos relacionais (Ex: Vet__r.Name) em propriedades diretas para o datatable
+            this.appointments = result.data.map(record => {
+                return {
+                    ...record,
+                    VetName: record.Vet__r ? record.Vet__r.Name : '',
+                    OwnerName: record.Pet_Owner__r ? record.Pet_Owner__r.Name : '',
+                    PetName: record.Pet__r ? record.Pet__r.Name : ''
+                };
+            });
+        } else if (result.error) {
+            this.showToast('Erro', 'Não foi possível atualizar a lista.', 'error');
         }
     }
 
-    handleDateChange(event) {
-        this.selectedDate = event.target.value;
+    openModal() {
+        this.isModalOpen = true;
     }
 
-    get hasAppointments() {
-        return this.appointments && this.appointments.length > 0;
+    closeModal() {
+        this.isModalOpen = false;
     }
 
-    getTodayLocalISODate() {
-        const today = new Date();
-
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-
-        return `${year}-${month}-${day}`;
+    handleSuccess() {
+        this.showToast('Sucesso', 'Consulta agendada com sucesso!', 'success');
+        this.closeModal();
+        return refreshApex(this.wiredAppointmentsResult);
     }
 
-    formatTime(rawTime) {
-        if (!rawTime) {
-            return '';
-        }
-
-        const [hours, minutes] = rawTime.split(':');
-
-        return `${hours}:${minutes}`;
+    showToast(title, message, variant) {
+        this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
     }
 }
