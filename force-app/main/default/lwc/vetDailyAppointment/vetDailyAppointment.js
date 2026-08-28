@@ -25,7 +25,7 @@ const COLUMNS = [
     { label: 'Status', fieldName: 'Status__c', type: 'text' }
 ];
 
-export default class VetDailyAppointments extends LightningElement {
+export default class VetDailyAppointment extends LightningElement {
     columns = COLUMNS;
     @track appointments = [];
     @track isModalOpen = false;
