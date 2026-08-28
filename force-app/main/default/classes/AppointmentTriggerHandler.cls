@@ -5,9 +5,6 @@
  * veterinário, na mesma data e no mesmo horário, evitando conflito
  * de agenda (overbooking).
  *
- * Escrita para funcionar corretamente em operações bulk (bulkificada),
- * respeitando governor limits (uma única query fora de loop).
- *
  * IMPORTANTE: este método espera ser chamado a partir do contexto de
  * trigger (before insert / before update), onde oldMap, quando não nulo,
  * sempre contém a entrada correspondente a cada registro de newRecords.
@@ -57,14 +54,10 @@ public with sharing class AppointmentTriggerHandler {
             existingAppointments.put(chave, existing);
         }
 
-        /*3) Detecta conflitos DENTRO do próprio lote (newRecords).
-            Necessário porque, em um insert bulk, dois registros novos
-            conflitantes entre si ainda não existem no banco no momento
-            da query acima — então a query sozinha não os pegaria.
-        */
+        //3) Detecta conflitos dentro do próprio lote (newRecords)            
         Map<String, Appointment__c> keysInBatch = new Map<String, Appointment__c>();
 
-        // 4) Valida cada registro do bulk (contra o banco e contra o próprio lote)
+        // 4) Valida cada registro do bulk
         for (Appointment__c appt : newRecords) {
 
             if (appt.Vet__c == null || appt.Date__c == null || appt.Time__c == null) {
@@ -73,7 +66,7 @@ public with sharing class AppointmentTriggerHandler {
 
             String currentKey = buildKey(appt.Vet__c, appt.Date__c, appt.Time__c);
 
-            // 4a) Conflito contra registros já existentes no banco
+            // 4.1) Conflito contra registros já existentes no banco
             Appointment__c conflict = existingAppointments.get(currentKey);
             Boolean isMesmoRegistro = conflict != null && conflict.Id == appt.Id;
 
@@ -85,7 +78,7 @@ public with sharing class AppointmentTriggerHandler {
                 continue;
             }
 
-            // 4b) Conflito contra outro registro do mesmo lote (ex: insert bulk)
+            // 4.2) Conflito contra outro registro do mesmo lote (ex: insert bulk)
             if (keysInBatch.containsKey(currentKey)) {
                 appt.addError(
                     'Já existe outro agendamento neste mesmo envio (lote) para este ' +

@@ -23,12 +23,18 @@ export default class VetDailyAppointment extends LightningElement {
                 VetName: appt.Vet__r ? appt.Vet__r.Name : '',
                 FormattedTime: this.formatTime(appt.Time__c)
             }));
+
             this.errorMessage = undefined;
+
         } else if (error) {
             this.appointments = [];
-            this.errorMessage = 'Não foi possível carregar os agendamentos. Tente novamente.';
-            // eslint-disable-next-line no-console
-            console.error('Erro ao buscar agendamentos:', error);
+            this.errorMessage =
+                'Não foi possível carregar os agendamentos. Tente novamente.';
+
+            console.error(
+                'Erro ao buscar agendamentos:',
+                error
+            );
         }
     }
 
@@ -40,30 +46,23 @@ export default class VetDailyAppointment extends LightningElement {
         return this.appointments && this.appointments.length > 0;
     }
 
-    /**
-     * Retorna a data local de hoje no formato YYYY-MM-DD, sem passar por UTC.
-     * Evita o bug de toISOString() mostrar o dia errado dependendo do
-     * fuso horário do usuário (ex: horários próximos da meia-noite).
-     */
     getTodayLocalISODate() {
         const today = new Date();
+
         const year = today.getFullYear();
         const month = String(today.getMonth() + 1).padStart(2, '0');
         const day = String(today.getDate()).padStart(2, '0');
+
         return `${year}-${month}-${day}`;
     }
 
-    /**
-     * Formata um valor de campo Time (ex: '09:00:00.000Z') para exibição
-     * amigável (ex: '09:00'). Ajuste o formato conforme a necessidade do
-     * time (12h/24h, exibir segundos, etc.).
-     */
     formatTime(rawTime) {
         if (!rawTime) {
             return '';
         }
-        // Campos Time do Salesforce chegam como string, ex: '09:00:00.000Z'
+
         const [hours, minutes] = rawTime.split(':');
+
         return `${hours}:${minutes}`;
     }
 }

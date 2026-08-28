@@ -82,7 +82,7 @@ private class AppointmentTriggerHandlerTest {
         );
         insert new List<Appointment__c>{ apptA, apptB };
 
-        // Try to move apptB into the same slot as apptA.
+        // Tente mover o compromisso B para o mesmo horário do compromisso A.
         apptB.Time__c = Time.newInstance(9, 0, 0, 0);
 
         Test.startTest();
