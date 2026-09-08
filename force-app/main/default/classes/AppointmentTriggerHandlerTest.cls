@@ -5,18 +5,45 @@ private class AppointmentTriggerHandlerTest {
      * Cria um registro de Vet__c para ser usado em todos os métodos de teste.
      */
     private static Vet__c createVet() {
-        Vet__c vet = new Vet__c(Name = 'Dr. Cris');
+        Vet__c vet = new Vet__c(Name = 'Dra. Cris');
         insert vet;
         return vet;
+    }
+
+    /**
+       Cria um registro de Pet_Owner__c. O campo CPF__c precisa passar por uma
+       validation rule do org.
+     */
+    private static Pet_Owner__c createPetOwner() {
+        Pet_Owner__c owner = new Pet_Owner__c(
+            Name = 'Joao Silva',
+            CPF__c = '11122233345'
+        );
+        insert owner;
+        return owner;
+    }
+
+    /**
+     * Cria um registro de Pet__c vinculado a um Pet_Owner__c, já que
+     * PetOwners__c é obrigatório em Pet__c (cada pet precisa ter um dono).
+     */
+    private static Pet__c createPet(Id ownerId) {
+        Pet__c pet = new Pet__c(Name = 'Rex', PetOwners__c = ownerId);
+        insert pet;
+        return pet;
     }
 
     //Testa o caminho feliz (Happy Path), garante que a validação não bloqueia agendamentos legítimos.
     @isTest
     static void testCreateAppointmentWithoutConflict_ShouldSucceed() {
         Vet__c vet = createVet();
+        Pet_Owner__c owner = createPetOwner();
+        Pet__c pet = createPet(owner.Id);
 
         Appointment__c appt = new Appointment__c(
             Vet__c = vet.Id,
+            Pet__c = pet.Id,
+            PetOwners__c = owner.Id,
             Date__c = Date.today().addDays(1),
             Time__c = Time.newInstance(9, 0, 0, 0)
         );
@@ -33,11 +60,16 @@ private class AppointmentTriggerHandlerTest {
     @isTest
     static void testCreateAppointmentWithConflict_ShouldFail() {
         Vet__c vet = createVet();
+        Pet_Owner__c owner = createPetOwner();
+        Pet__c pet1 = createPet(owner.Id);
+        Pet__c pet2 = createPet(owner.Id);
         Date apptDate = Date.today().addDays(1);
         Time apptTime = Time.newInstance(10, 0, 0, 0);
 
         Appointment__c firstAppt = new Appointment__c(
             Vet__c = vet.Id,
+            Pet__c = pet1.Id,
+            PetOwners__c = owner.Id,
             Date__c = apptDate,
             Time__c = apptTime
         );
@@ -45,6 +77,8 @@ private class AppointmentTriggerHandlerTest {
 
         Appointment__c conflictingAppt = new Appointment__c(
             Vet__c = vet.Id,
+            Pet__c = pet2.Id,
+            PetOwners__c = owner.Id,
             Date__c = apptDate,
             Time__c = apptTime
         );
@@ -68,15 +102,22 @@ private class AppointmentTriggerHandlerTest {
     @isTest
     static void testUpdateAppointmentGeneratesConflict_ShouldFail() {
         Vet__c vet = createVet();
+        Pet_Owner__c owner = createPetOwner();
+        Pet__c pet1 = createPet(owner.Id);
+        Pet__c pet2 = createPet(owner.Id);
         Date apptDate = Date.today().addDays(2);
 
         Appointment__c apptA = new Appointment__c(
             Vet__c = vet.Id,
+            Pet__c = pet1.Id,
+            PetOwners__c = owner.Id,
             Date__c = apptDate,
             Time__c = Time.newInstance(9, 0, 0, 0)
         );
         Appointment__c apptB = new Appointment__c(
             Vet__c = vet.Id,
+            Pet__c = pet2.Id,
+            PetOwners__c = owner.Id,
             Date__c = apptDate,
             Time__c = Time.newInstance(11, 0, 0, 0)
         );
@@ -98,14 +139,18 @@ private class AppointmentTriggerHandlerTest {
     }
 
     /*Testa que um update em campo NÃO monitorado (fora de Vet__c/Date__c/Time__c)
-      não dispara a validação de conflito nem é bloqueado indevidamente.      
+      não dispara a validação de conflito nem é bloqueado indevidamente.
     */
     @isTest
     static void testUpdateUnrelatedFieldDoesNotTriggerValidation_ShouldSucceed() {
         Vet__c vet = createVet();
+        Pet_Owner__c owner = createPetOwner();
+        Pet__c pet = createPet(owner.Id);
 
         Appointment__c appt = new Appointment__c(
             Vet__c = vet.Id,
+            Pet__c = pet.Id,
+            PetOwners__c = owner.Id,
             Date__c = Date.today().addDays(1),
             Time__c = Time.newInstance(9, 0, 0, 0)
         );
@@ -132,6 +177,8 @@ private class AppointmentTriggerHandlerTest {
     @isTest
     static void testAppointmentWithNullRelevantFields_ShouldNotBeValidated() {
         Vet__c vet = createVet();
+        Pet_Owner__c owner = createPetOwner();
+        Pet__c pet = createPet(owner.Id);
 
         /* Ajuste os campos abaixo caso Vet__c, Date__c ou Time__c sejam
            obrigatórios (required) no seu objeto; nesse caso, testa apenas
@@ -139,6 +186,8 @@ private class AppointmentTriggerHandlerTest {
         */
         Appointment__c apptWithoutTime = new Appointment__c(
             Vet__c = vet.Id,
+            Pet__c = pet.Id,
+            PetOwners__c = owner.Id,
             Date__c = Date.today().addDays(1),
             Time__c = null
         );
@@ -161,11 +210,20 @@ private class AppointmentTriggerHandlerTest {
     @isTest
     static void testBulkInsertTwoHundredAppointments_ShouldSucceed() {
         Vet__c vet = createVet();
+        Pet_Owner__c owner = createPetOwner();
         List<Appointment__c> bulkAppointments = new List<Appointment__c>();
+        List<Pet__c> pets = new List<Pet__c>();
+
+        for (Integer i = 0; i < 200; i++) {
+            pets.add(new Pet__c(Name = 'Pet ' + i, PetOwners__c = owner.Id));
+        }
+        insert pets;
 
         for (Integer i = 0; i < 200; i++) {
             bulkAppointments.add(new Appointment__c(
                 Vet__c = vet.Id,
+                Pet__c = pets[i].Id,
+                PetOwners__c = owner.Id,
                 Date__c = Date.today().addDays(i + 1), // data diferente a cada vez -> sem conflitos
                 Time__c = Time.newInstance(9, 0, 0, 0)
             ));
@@ -185,16 +243,23 @@ private class AppointmentTriggerHandlerTest {
     @isTest
     static void testInsertTwoConflictingRecordsInSameBatch_ShouldFailForSecond() {
         Vet__c vet = createVet();
+        Pet_Owner__c owner = createPetOwner();
+        Pet__c pet1 = createPet(owner.Id);
+        Pet__c pet2 = createPet(owner.Id);
         Date apptDate = Date.today().addDays(3);
         Time apptTime = Time.newInstance(14, 0, 0, 0);
 
         Appointment__c apptA = new Appointment__c(
             Vet__c = vet.Id,
+            Pet__c = pet1.Id,
+            PetOwners__c = owner.Id,
             Date__c = apptDate,
             Time__c = apptTime
         );
         Appointment__c apptB = new Appointment__c(
             Vet__c = vet.Id,
+            Pet__c = pet2.Id,
+            PetOwners__c = owner.Id,
             Date__c = apptDate,
             Time__c = apptTime
         );

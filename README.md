@@ -591,5 +591,5 @@ Essa arquitetura permite demonstrar que a solução não depende exclusivamente 
 
 Projeto desenvolvido como demonstração prática de competências em **Salesforce Administration e Salesforce Development**, com foco em:
 
-**Apex · LWC · SOQL · Flow · Test Classes · Segurança · Automação · Reports & Dashboards**
+**Apex · LWC · SOQL · Flow · Test Class · Segurança · Automação · Reports & Dashboards**
 

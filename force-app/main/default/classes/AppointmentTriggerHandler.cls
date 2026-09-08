@@ -54,7 +54,7 @@ public with sharing class AppointmentTriggerHandler {
             existingAppointments.put(chave, existing);
         }
 
-        //3) Detecta conflitos dentro do próprio lote (newRecords)            
+        //3) Detecta conflitos dentro do próprio Batch (newRecords)            
         Map<String, Appointment__c> keysInBatch = new Map<String, Appointment__c>();
 
         // 4) Valida cada registro do bulk
