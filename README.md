@@ -558,7 +558,7 @@ O projeto demonstra uma evolução arquitetural em camadas:
 │       App + Pages + LWC               │
 ├───────────────────────────────────────┤
 │          Business Automation          │
-│              Flow                    │
+│              Flow                     │
 ├───────────────────────────────────────┤
 │           Programmatic Logic          │
 │        Apex + Trigger Handler         │
@@ -566,8 +566,8 @@ O projeto demonstra uma evolução arquitetural em camadas:
 │              Data Layer               │
 │       Objects + Fields + SOQL         │
 ├───────────────────────────────────────┤
-│       Security & Governance            │
-│ Profile + Permission Set + OWD + FLS │
+│       Security & Governance           │
+│ Profile + Permission Set + OWD + FLS  │
 └───────────────────────────────────────┘
 ```
 
