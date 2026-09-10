@@ -3,9 +3,10 @@
         "experimentalDecorators": true,
         "paths": {
             "c/*": [
-                "./*"
+                "*"
             ]
-        }
+        },
+        "baseUrl": "."
     },
     "include": [
         "**/*",

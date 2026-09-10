@@ -39,8 +39,8 @@ public with sharing class AppointmentTriggerHandler {
             return;
         }
 
-        /*2) Uma única consulta SOQL busca todos os agendamentos existentes
-             para os veterinários/datas envolvidos neste bulk
+        /* 2) Uma única consulta SOQL busca todos os agendamentos existentes
+             para os veterinários/datas envolvidos.
         */
         Map<String, Appointment__c> existingAppointments = new Map<String, Appointment__c>();
 
@@ -68,9 +68,9 @@ public with sharing class AppointmentTriggerHandler {
 
             // 4.1) Conflito contra registros já existentes no banco
             Appointment__c conflict = existingAppointments.get(currentKey);
-            Boolean isMesmoRegistro = conflict != null && conflict.Id == appt.Id;
+            Boolean isSameRecord = conflict != null && conflict.Id == appt.Id;
 
-            if (conflict != null && !isMesmoRegistro) {
+            if (conflict != null && !isSameRecord) {
                 appt.addError(
                     'Este veterinário já possui um agendamento nesta data e horário. ' +
                     'Escolha outro horário ou outro profissional.'
@@ -81,7 +81,7 @@ public with sharing class AppointmentTriggerHandler {
             // 4.2) Conflito contra outro registro do mesmo lote (ex: insert bulk)
             if (keysInBatch.containsKey(currentKey)) {
                 appt.addError(
-                    'Já existe outro agendamento neste mesmo envio (lote) para este ' +
+                    'Já existe outro agendamento para este ' +
                     'veterinário, nesta data e horário. Ajuste os registros antes de salvar.'
                 );
                 continue;

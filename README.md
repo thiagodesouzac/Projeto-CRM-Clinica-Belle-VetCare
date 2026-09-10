@@ -203,7 +203,7 @@ Essa abordagem demonstra aplicação prática de **Bulkification**, conceito fun
 A classe de teste cobre diferentes cenários da regra de negócio:
 
 | Cenário | Resultado esperado |
-|---|---|
+|---------|--------------------|
 | Criar agendamento sem conflito | Sucesso |
 | Criar agendamento com conflito | Falha |
 | Atualizar agendamento criando conflito | Falha |
