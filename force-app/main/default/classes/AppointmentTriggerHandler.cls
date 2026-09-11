@@ -2,12 +2,12 @@
  * Classe: AppointmentTriggerHandler
  *
  * Responsabilidade: validar se já existe um agendamento para o mesmo
- * veterinário, na mesma data e no mesmo horário, evitando conflito
- * de agenda (overbooking).
+   veterinário, na mesma data e no mesmo horário, evitando conflito
+   de agenda (overbooking).
  *
- * IMPORTANTE: este método espera ser chamado a partir do contexto de
- * trigger (before insert / before update), onde oldMap, quando não nulo,
- * sempre contém a entrada correspondente a cada registro de newRecords.
+ * Este método espera ser chamado a partir do contexto de
+   trigger (before insert / before update), onde oldMap, quando não nulo,
+   sempre contém a entrada correspondente a cada registro de newRecords.
  */
 public with sharing class AppointmentTriggerHandler {
 
@@ -78,7 +78,7 @@ public with sharing class AppointmentTriggerHandler {
                 continue;
             }
 
-            // 4.2) Conflito contra outro registro do mesmo lote (ex: insert bulk)
+            // 4.2) Conflito contra outro registro do mesmo lote
             if (keysInBatch.containsKey(currentKey)) {
                 appt.addError(
                     'Já existe outro agendamento para este ' +

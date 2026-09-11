@@ -2,7 +2,7 @@
 private class AppointmentTriggerHandlerTest {
 
     /**
-     * Cria um registro de Vet__c para ser usado em todos os métodos de teste.
+     * Cria um registro de Vet para ser usado em todos os métodos de teste.
      */
     private static Vet__c createVet() {
         Vet__c vet = new Vet__c(Name = 'Dra. Cris');
@@ -11,7 +11,7 @@ private class AppointmentTriggerHandlerTest {
     }
 
     /**
-       Cria um registro de Pet_Owner__c. O campo CPF__c precisa passar por uma
+       Cria um registro de Pet_Owner. O campo CPF precisa passar por uma
        validation rule do org.
      */
     private static Pet_Owner__c createPetOwner() {
@@ -24,8 +24,8 @@ private class AppointmentTriggerHandlerTest {
     }
 
     /**
-     * Cria um registro de Pet__c vinculado a um Pet_Owner__c, já que
-     * PetOwners__c é obrigatório em Pet__c (cada pet precisa ter um dono).
+     * Cria um registro de Pet vinculado a um Pet_Owner, já que
+       PetOwners é obrigatório em Pet (cada pet precisa ter um dono).
      */
     private static Pet__c createPet(Id ownerId) {
         Pet__c pet = new Pet__c(Name = 'Rex', PetOwners__c = ownerId);
@@ -56,7 +56,7 @@ private class AppointmentTriggerHandlerTest {
         System.assertNotEquals(null, inserted.Id, 'Agendamento realizado com sucesso.');
     }
 
-    //Testa o bloqueio de conflito no insert. Garante que um segundo agendamento conflitante seja bloqueado.
+    //Testa o bloqueio de conflito noinsert. Garante que um segundo agendamento conflitante seja bloqueado.
     @isTest
     static void testCreateAppointmentWithConflict_ShouldFail() {
         Vet__c vet = createVet();
@@ -123,7 +123,7 @@ private class AppointmentTriggerHandlerTest {
         );
         insert new List<Appointment__c>{ apptA, apptB };
 
-        // Tente mover o compromisso B para o mesmo horário do compromisso A.
+        // Tenta agendar o compromisso B para o mesmo horário do compromisso A.
         apptB.Time__c = Time.newInstance(9, 0, 0, 0);
 
         Test.startTest();
@@ -138,7 +138,7 @@ private class AppointmentTriggerHandlerTest {
         );
     }
 
-    /*Testa que um update em campo NÃO monitorado (fora de Vet__c/Date__c/Time__c)
+    /*Testa um update em campo NÃO monitorado (fora de Vet/Date/Time)
       não dispara a validação de conflito nem é bloqueado indevidamente.
     */
     @isTest
@@ -156,8 +156,8 @@ private class AppointmentTriggerHandlerTest {
         );
         insert appt;
 
-        // Ajuste 'Notes__c' para um campo real do seu objeto que não seja
-        // Vet__c, Date__c ou Time__c.
+        // Ajuste 'Notes' para um campo real do seu objeto que não seja
+        // Vet, Date ou Time.
         appt.Notes__c = 'Trazer exames anteriores';
 
         Test.startTest();
@@ -167,11 +167,11 @@ private class AppointmentTriggerHandlerTest {
         System.assertEquals(
             true,
             result.isSuccess(),
-            'Update em campo não relevante (fora de Vet__c/Date__c/Time__c) não deve ser bloqueado.'
+            'Update em campo não relevante (fora de Vet/Date/Time) não deve ser bloqueado.'
         );
     }
 
-    /*Testa que registros com campos nulos (Vet__c, Date__c ou Time__c) são
+    /*Testa registros com campos nulos (Vet, Date ou Time) são
       ignorados pela validação, sem lançar exceção nem bloquear indevidamente.
     */
     @isTest
@@ -180,7 +180,7 @@ private class AppointmentTriggerHandlerTest {
         Pet_Owner__c owner = createPetOwner();
         Pet__c pet = createPet(owner.Id);
 
-        /* Ajuste os campos abaixo caso Vet__c, Date__c ou Time__c sejam
+        /* Ajusta os campos abaixo caso Vet, Date ou Time sejam
            obrigatórios (required) no seu objeto; nesse caso, testa apenas
            os campos que podem ficar nulos.
         */
@@ -205,7 +205,7 @@ private class AppointmentTriggerHandlerTest {
 
     /*Testa bulkification/governor limits, não a regra de conflito em si.
       Garante que a trigger não estoura limites de SOQL/DML quando processa
-      um lote no tamanho máximo permitido por operação DML (200 registros).
+      um batch no tamanho máximo permitido por operação DML (200 registros).
     */
     @isTest
     static void testBulkInsertTwoHundredAppointments_ShouldSucceed() {
@@ -224,7 +224,7 @@ private class AppointmentTriggerHandlerTest {
                 Vet__c = vet.Id,
                 Pet__c = pets[i].Id,
                 PetOwners__c = owner.Id,
-                Date__c = Date.today().addDays(i + 1), // data diferente a cada vez -> sem conflitos
+                Date__c = Date.today().addDays(i + 1), // Uma data diferente por vez -> sem conflitos
                 Time__c = Time.newInstance(9, 0, 0, 0)
             ));
         }
@@ -237,8 +237,8 @@ private class AppointmentTriggerHandlerTest {
         System.assertEquals(200, inserted.size(), 'All 200 non-conflicting appointments should be inserted.');
     }
 
-    /*Testa o conflito entre dois registros novos, dentro do mesmo lote,
-      garante que a validação também funciona dentro do mesmo lote de insert.
+    /*Testa o conflito entre dois registros novos, dentro do mesmo batch,
+      garante que a validação também funciona dentro do mesmo batch de insert.
     */
     @isTest
     static void testInsertTwoConflictingRecordsInSameBatch_ShouldFailForSecond() {
@@ -271,12 +271,12 @@ private class AppointmentTriggerHandlerTest {
         );
         Test.stopTest();
 
-        System.assertEquals(true, results[0].isSuccess(), 'O primeiro registro do lote deveria ser salvo normalmente.');
-        System.assertEquals(false, results[1].isSuccess(), 'O segundo registro do lote deveria ser bloqueado por conflito com o primeiro.');
+        System.assertEquals(true, results[0].isSuccess(), 'O primeiro registro do batch deveria ser salvo normalmente.');
+        System.assertEquals(false, results[1].isSuccess(), 'O segundo registro do batch deveria ser bloqueado por conflito com o primeiro.');
 
         System.assert(
-            results[1].getErrors()[0].getMessage().contains('mesmo envio (lote)'),
-            'A mensagem de erro deveria indicar conflito dentro do mesmo lote.'
+            results[1].getErrors()[0].getMessage().contains('mesmo envio (batch)'),
+            'A mensagem de erro deveria indicar conflito dentro do mesmo batch.'
         );
 
         List<Appointment__c> inserted = [
