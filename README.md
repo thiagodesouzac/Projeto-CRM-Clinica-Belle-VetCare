@@ -107,16 +107,19 @@ A base do projeto foi construída utilizando recursos declarativos do Salesforce
 - Fórmulas e validações;
 - Lightning App;
 - Lightning Record Pages;
+- Lightning Pages
+- Page Layouts
+- Validation Rules
 - Dynamic Forms;
 - Profiles;
 - Permission Sets;
 - Organization-Wide Defaults;
 - Role Hierarchy;
 - Sharing Rules;
+- Queues
 - Field-Level Security;
-- Reports;
-- Dashboards;
-- Flows.
+- RReports & Dashboards;
+- Flows (Autolaunched, Screen Flows, Record-Triggered);
 
 ---
 
@@ -142,9 +145,9 @@ Realiza as validações necessárias e envia uma notificação por e-mail ao vet
 
 Utilizados no atendimento digital:
 
-- `Flow Bot Register PetOwner Pet`
-- `Flow Bot Schedule Appointment`
-- `Flow Bot Validate PetOwner CPF`
+- `Flow Register PetOwner Pet`
+- `Flow Schedule`
+- `Flow Validate PetOwner CPF`
 
 ---
 

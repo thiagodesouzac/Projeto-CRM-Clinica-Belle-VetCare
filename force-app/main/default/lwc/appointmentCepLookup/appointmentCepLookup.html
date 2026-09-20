@@ -1,0 +1,74 @@
+<template>
+    <lightning-card title={cardTitle} icon-name="standard:event">
+        <div class="slds-var-p-horizontal_medium slds-is-relative">
+            <lightning-spinner
+                lwc:if={showSpinner}
+                alternative-text="Loading"
+                size="small">
+            </lightning-spinner>
+
+            <div lwc:if={layoutFailed} class="slds-text-color_error slds-m-bottom_small" role="alert">
+                {layoutErrorMessage}
+            </div>
+
+            <lightning-record-edit-form
+                object-api-name={appointmentObject}
+                record-id={recordId}
+                onload={handleLoad}
+                onsubmit={handleSubmit}
+                onsuccess={handleSuccess}
+                onerror={handleError}>
+
+                <lightning-messages></lightning-messages>
+
+                <!--
+                    Ao criar um registro (sem recordId), as seções e campos vêm do layout
+                    do objeto. Ao editar, aparecem somente os campos de endereço.
+                -->
+                <template for:each={sections} for:item="section">
+                    <div key={section.key} class="slds-m-bottom_medium">
+                        <h3 lwc:if={section.heading} class="slds-section__title slds-theme_shade">
+                            <span class="slds-truncate slds-p-horizontal_small" title={section.heading}>
+                                {section.heading}
+                            </span>
+                        </h3>
+
+                        <div class="slds-grid slds-wrap slds-gutters_small slds-m-top_x-small">
+                            <template for:each={section.fields} for:item="field">
+                                <div key={field.apiName} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                    <lightning-input-field
+                                        field-name={field.apiName}
+                                        data-field={field.apiName}
+                                        required={field.required}
+                                        onchange={handleFieldChange}>
+                                    </lightning-input-field>
+
+                                    <template lwc:if={field.isZipCode}>
+                                        <div lwc:if={zipCodeMessage} class={zipCodeMessageClass} role="status">
+                                            {zipCodeMessage}
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+
+                <div class="slds-m-vertical_medium slds-text-align_right">
+                    <lightning-button
+                        lwc:if={isNewMode}
+                        class="slds-m-right_x-small"
+                        label="Cancel"
+                        onclick={handleCancel}>
+                    </lightning-button>
+                    <lightning-button
+                        variant="brand"
+                        type="submit"
+                        label="Save"
+                        disabled={showSpinner}>
+                    </lightning-button>
+                </div>
+            </lightning-record-edit-form>
+        </div>
+    </lightning-card>
+</template>
