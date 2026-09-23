@@ -1,7 +1,6 @@
 <aura:component implements="lightning:actionOverride" access="global">
-    <!--
-        Wrapper Aura usado para substituir o botão "New" do Appointment.
-        Apenas exibe o LWC appointmentCepLookup (busca de CEP + formulário completo).
-    -->
-    <c:appointmentCepLookup />
+    <aura:attribute name="overlayRef" type="Object"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="c:appointmentModalCloseEvent" action="{!c.handleModalClose}"/>
+    <lightning:overlayLibrary aura:id="overlayLib"/>
 </aura:component>

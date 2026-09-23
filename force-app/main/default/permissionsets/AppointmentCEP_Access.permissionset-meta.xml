@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <classAccesses>
-        <apexClass>ViaCepController</apexClass>
+        <apexClass>AppointmentCEPService</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <description>Allows using the automatic address lookup by ZIP code (ViaCEP) on the appointment.</description>
     <hasActivationRequired>false</hasActivationRequired>
-    <label>Appointment - ZIP Code Lookup (ViaCEP)</label>
+    <label>Appointment - CEP Lookup Access</label>
 </PermissionSet>

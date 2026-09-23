@@ -1,0 +1,135 @@
+<template>
+    <lightning-record-edit-form
+        object-api-name="Appointment__c"
+        record-id={safeRecordId}
+        onsubmit={handleSubmit}
+        onsuccess={handleSuccess}
+        onerror={handleError}
+    >
+        <lightning-messages></lightning-messages>
+
+        <!-- VET APPOINTMENT DETAILS -->
+        <h3 class="slds-section__title slds-theme_shade slds-m-top_medium slds-p-around_x-small">
+            <span class="slds-truncate" title="Vet Appointment Details">Vet Appointment Details</span>
+        </h3>
+        <div class="slds-grid slds-wrap slds-p-horizontal_small">
+            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                <lightning-input-field field-name="Service_Type__c"></lightning-input-field>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                <lightning-input-field field-name="Date__c"></lightning-input-field>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                <lightning-input-field field-name="Time__c"></lightning-input-field>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                <lightning-input-field field-name="Vet__c"></lightning-input-field>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                <lightning-input-field field-name="Status__c"></lightning-input-field>
+            </div>
+        </div>
+
+        <!-- PET REGISTRATION -->
+        <h3 class="slds-section__title slds-theme_shade slds-m-top_medium slds-p-around_x-small">
+            <span class="slds-truncate" title="Pet Registration">Pet Registration</span>
+        </h3>
+        <div class="slds-grid slds-wrap slds-p-horizontal_small">
+            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                <lightning-input-field field-name="Pet__c"></lightning-input-field>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                <lightning-input-field field-name="Species__c"></lightning-input-field>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                <lightning-input-field field-name="Notes__c"></lightning-input-field>
+            </div>
+        </div>
+
+        <!-- PET OWNER REGISTRATION -->
+        <h3 class="slds-section__title slds-theme_shade slds-m-top_medium slds-p-around_x-small">
+            <span class="slds-truncate" title="Pet Owner Registration">Pet Owner Registration</span>
+        </h3>
+        <div class="slds-grid slds-wrap slds-p-horizontal_small">
+            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                <lightning-input-field field-name="PetOwners__c" required></lightning-input-field>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                <lightning-input-field field-name="CPF__c"></lightning-input-field>
+            </div>
+
+            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                <lightning-input-field
+                    field-name="CEP__c"
+                    onchange={handleZipCodeChange}
+                    required>
+                </lightning-input-field>
+                <template if:true={isLookingUpAddress}>
+                    <div class="slds-p-left_small slds-text-color_weak">Buscando endereço...</div>
+                </template>
+                <template if:true={zipCodeError}>
+                    <div class="slds-p-left_small slds-text-color_error">{zipCodeError}</div>
+                </template>
+            </div>
+
+            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                <lightning-input
+                    type="text"
+                    label="Street"
+                    value={street}
+                    onchange={handleStreetChange}
+                    required>
+                </lightning-input>
+            </div>
+
+            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                <lightning-input-field field-name="Number__c" required></lightning-input-field>
+            </div>
+
+            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                <lightning-input
+                    type="text"
+                    label="Neighborhood"
+                    value={neighborhood}
+                    onchange={handleNeighborhoodChange}
+                    required>
+                </lightning-input>
+            </div>
+
+            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                <lightning-input
+                    type="text"
+                    label="City"
+                    value={city}
+                    onchange={handleCityChange}
+                    required>
+                </lightning-input>
+            </div>
+
+            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                <lightning-input
+                    type="text"
+                    label="State"
+                    value={state}
+                    onchange={handleStateChange}
+                    max-length="2"
+                    required>
+                </lightning-input>
+            </div>
+        </div>
+
+        <div class="slds-p-top_medium slds-text-align_right">
+            <lightning-button
+                variant="neutral"
+                label="Cancel"
+                onclick={handleCancel}
+                class="slds-m-right_x-small">
+            </lightning-button>
+            <lightning-button
+                variant="brand"
+                type="submit"
+                label="Save">
+            </lightning-button>
+        </div>
+    </lightning-record-edit-form>
+</template>

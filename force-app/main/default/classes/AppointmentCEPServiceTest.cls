@@ -1,5 +1,5 @@
 @IsTest
-private class ViaCepControllerTest {
+private class AppointmentCEPServiceTest {
 
     private static final String SUCCESS_JSON =
         '{' +
@@ -18,13 +18,10 @@ private class ViaCepControllerTest {
         '"siafi":"7107"' +
         '}';
 
-    /**
-     * Mock configurável da API ViaCEP.
-     */
     private class ViaCepMock implements HttpCalloutMock {
         public Integer statusCode = 200;
         public String body = '';
-        public Boolean throwException = false;
+        public Boolean shouldThrow = false;
         public String receivedEndpoint;
         public String receivedMethod;
 
@@ -32,7 +29,7 @@ private class ViaCepControllerTest {
             receivedEndpoint = request.getEndpoint();
             receivedMethod = request.getMethod();
 
-            if (throwException) {
+            if (shouldThrow) {
                 throw new CalloutException('Simulated timeout');
             }
 
@@ -52,15 +49,15 @@ private class ViaCepControllerTest {
         return mock;
     }
 
-    private static void assertError(String zipCode, String expectedText) {
+    private static void assertError(String zipCode, String expectedFragment) {
         Boolean exceptionThrown = false;
         Test.startTest();
         try {
-            ViaCepController.findAddress(zipCode);
+            AppointmentCEPService.getAddressByZipCode(zipCode);
         } catch (AuraHandledException e) {
             exceptionThrown = true;
             Assert.isTrue(
-                e.getMessage().containsIgnoreCase(expectedText),
+                e.getMessage().containsIgnoreCase(expectedFragment),
                 'Unexpected message: ' + e.getMessage()
             );
         }
@@ -73,14 +70,14 @@ private class ViaCepControllerTest {
         ViaCepMock mock = setUpMock(200, SUCCESS_JSON);
 
         Test.startTest();
-        ViaCepController.AddressDTO result = ViaCepController.findAddress('01001-000');
+        AppointmentCEPService.AddressDTO result = AppointmentCEPService.getAddressByZipCode('01001-000');
         Test.stopTest();
 
-        Assert.areEqual('01001-000', result.zipCode);
-        Assert.areEqual('Praça da Sé', result.street);
-        Assert.areEqual('Sé', result.neighborhood);
-        Assert.areEqual('São Paulo', result.city);
-        Assert.areEqual('SP', result.state);
+        Assert.areEqual('01001-000', result.cep);
+        Assert.areEqual('Praça da Sé', result.logradouro);
+        Assert.areEqual('Sé', result.bairro);
+        Assert.areEqual('São Paulo', result.localidade);
+        Assert.areEqual('SP', result.uf);
         Assert.areEqual('GET', mock.receivedMethod);
         Assert.areEqual('https://viacep.com.br/ws/01001000/json/', mock.receivedEndpoint);
     }
@@ -90,29 +87,28 @@ private class ViaCepControllerTest {
         ViaCepMock mock = setUpMock(200, SUCCESS_JSON);
 
         Test.startTest();
-        ViaCepController.AddressDTO result = ViaCepController.findAddress('01001000');
+        AppointmentCEPService.AddressDTO result = AppointmentCEPService.getAddressByZipCode('01001000');
         Test.stopTest();
 
-        Assert.areEqual('SP', result.state);
+        Assert.areEqual('SP', result.uf);
         Assert.areEqual('https://viacep.com.br/ws/01001000/json/', mock.receivedEndpoint);
     }
 
     @IsTest
     static void shouldReturnEmptyStreetAndNeighborhoodForGenericZipCode() {
-        // CEP de cidade pequena: o ViaCEP não devolve logradouro nem bairro.
         setUpMock(
             200,
             '{"cep":"12345-000","logradouro":"","bairro":"","localidade":"Small Town","uf":"MG"}'
         );
 
         Test.startTest();
-        ViaCepController.AddressDTO result = ViaCepController.findAddress('12345000');
+        AppointmentCEPService.AddressDTO result = AppointmentCEPService.getAddressByZipCode('12345000');
         Test.stopTest();
 
-        Assert.areEqual('', result.street);
-        Assert.areEqual('', result.neighborhood);
-        Assert.areEqual('Small Town', result.city);
-        Assert.areEqual('MG', result.state);
+        Assert.areEqual('', result.logradouro);
+        Assert.areEqual('', result.bairro);
+        Assert.areEqual('Small Town', result.localidade);
+        Assert.areEqual('MG', result.uf);
     }
 
     @IsTest
@@ -123,7 +119,6 @@ private class ViaCepControllerTest {
 
     @IsTest
     static void shouldThrowWhenErrorFlagIsString() {
-        // Versões antigas do ViaCEP devolviam "erro": "true" (string).
         setUpMock(200, '{"erro": "true"}');
         assertError('99999999', 'not found');
     }
@@ -174,7 +169,7 @@ private class ViaCepControllerTest {
     @IsTest
     static void shouldThrowWhenCalloutFails() {
         ViaCepMock mock = new ViaCepMock();
-        mock.throwException = true;
+        mock.shouldThrow = true;
         Test.setMock(HttpCalloutMock.class, mock);
 
         assertError('01001000', 'Could not look up');

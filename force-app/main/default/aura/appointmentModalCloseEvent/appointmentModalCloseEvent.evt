@@ -1,0 +1,1 @@
+<aura:event type="APPLICATION" description="Fired when the Appointment modal should close"/>

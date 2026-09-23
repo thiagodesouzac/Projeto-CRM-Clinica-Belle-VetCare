@@ -93,6 +93,11 @@ Appointment__c ←→ Vet__c
 | PetOwner | Lookup | Responsável pelo pet |
 | Pet | Lookup | Animal atendido |
 | Service Type | Picklist | Tipo de atendimento |
+| CEP | Text | CEP do tutor (obrigatório), usado na busca automática de endereço |
+| Street | Text Area | Logradouro, preenchido automaticamente via ViaCEP |
+| Neighborhood | Text | Bairro, preenchido automaticamente via ViaCEP |
+| City | Text | Cidade, preenchida automaticamente via ViaCEP |
+| State | Picklist | UF, preenchida automaticamente via ViaCEP |
 
 ---
 
@@ -248,6 +253,272 @@ VetAppointmentController
 ```
 
 O controlador Apex utiliza `WITH SECURITY_ENFORCED` para respeitar as permissões do usuário conectado durante a consulta.
+
+---
+
+# Integração com API Externa — Busca Automática de Endereço (ViaCEP)
+
+## Visão Geral
+
+No cadastro de um agendamento, o CEP do tutor é obrigatório. Para reduzir a digitação manual e evitar erros de endereço, foi implementada uma integração com a API pública **[ViaCEP](https://viacep.com.br)**: ao informar os 8 dígitos do CEP, o sistema consulta o serviço e preenche automaticamente **rua, bairro, cidade e UF** no objeto `Appointment__c`.
+
+### Requisitos atendidos
+
+- Preenchimento automático de `Street__c`, `Neighborhood__c`, `City__c` e `State__c` a partir de `CEP__c`;
+- Funcionamento diretamente no botão **New** do `Appointment__c`, sem etapas adicionais para o usuário;
+- Aceitação do CEP com ou sem máscara (`80250-070` ou `80250070`);
+- Campos preenchidos permanecem editáveis, pois CEPs genéricos de cidades pequenas não possuem logradouro nem bairro;
+- Mensagens claras para CEP inválido, inexistente ou serviço indisponível;
+- Nenhuma credencial ou dado pessoal enviado à API externa: somente o CEP.
+
+---
+
+## Arquitetura da Integração
+
+```text
+Usuário clica em "New" (Appointment__c)
+                ↓
+Action Override — Aura: appointmentNewOverride
+                ↓
+LWC: appointmentCepLookup
+                ↓  (8 dígitos informados)
+Apex: ViaCepController.findAddress(zipCode)
+                ↓  HTTP GET · Remote Site Setting "ViaCEP"
+API ViaCEP: https://viacep.com.br/ws/{cep}/json/
+                ↓
+AddressDTO (zipCode, street, neighborhood, city, state)
+                ↓
+LWC preenche CEP__c · Street__c · Neighborhood__c · City__c · State__c
+```
+
+### Componentes
+
+| Componente | Tipo | Responsabilidade |
+|---|---|---|
+| `ViaCepController` | Apex Class | Valida o CEP, executa o callout, interpreta a resposta e trata erros |
+| `ViaCepControllerTest` | Apex Test Class | 14 cenários com `HttpCalloutMock` |
+| `appointmentCepLookup` | LWC | Formulário de agendamento, consulta do CEP e preenchimento dos campos |
+| `appointmentNewOverride` | Aura Component | Wrapper que permite substituir o botão **New** pelo LWC |
+| `ViaCEP` | Remote Site Setting | Autoriza o callout para `https://viacep.com.br` |
+| `Appointment_ViaCEP_Access` | Permission Set | Concede acesso à classe `ViaCepController` |
+
+### Mapeamento de campos
+
+| Retorno da API ViaCEP | Campo em `Appointment__c` | Observação |
+|---|---|---|
+| `cep` | `CEP__c` | Gravado no formato `00000-000` |
+| `logradouro` | `Street__c` | Pode vir vazio em CEPs genéricos |
+| `bairro` | `Neighborhood__c` | Pode vir vazio em CEPs genéricos |
+| `localidade` | `City__c` | |
+| `uf` | `State__c` | Picklist com as siglas dos estados (`PR`, `SP`, ...) |
+
+---
+
+## Camada Apex — ViaCepController
+
+```apex
+@AuraEnabled
+public static AddressDTO findAddress(String zipCode)
+```
+
+### Responsabilidades
+
+- Remover caracteres não numéricos do CEP e validar que restaram exatamente 8 dígitos;
+- Executar `GET https://viacep.com.br/ws/{cep}/json/` com timeout de 10 segundos;
+- Interpretar o JSON com `JSON.deserializeUntyped`, aceitando o indicador `erro` como booleano ou texto;
+- Retornar um `AddressDTO` com `zipCode`, `street`, `neighborhood`, `city` e `state`;
+- Converter qualquer falha em `AuraHandledException` com mensagem legível (`setMessage`), exibida diretamente ao usuário pelo LWC.
+
+A classe utiliza `with sharing` e não realiza operações DML.
+
+### Tratamento de erros
+
+| Cenário | Mensagem exibida ao usuário |
+|---|---|
+| CEP nulo, em branco ou diferente de 8 dígitos | `Invalid ZIP code. Enter the 8 digits of the ZIP code.` |
+| API retorna HTTP 400 | `ZIP code has an invalid format. Check the digits you entered.` |
+| API retorna HTTP 200 com `erro` (CEP inexistente) | `ZIP code not found. Check the number or fill in the address manually.` |
+| API retorna HTTP diferente de 200 | `ZIP code lookup service is unavailable right now (HTTP <status>). Fill in the address manually or try again.` |
+| Corpo da resposta não é JSON | `Unexpected response from the ZIP code service. Try again.` |
+| Exceção no callout (ex.: timeout) | `Could not look up the ZIP code right now. Try again in a moment.` |
+
+---
+
+## Camada Lightning Web Component — appointmentCepLookup
+
+O componente possui **dois modos de operação**, definidos pela presença de `recordId`:
+
+| Modo | Contexto | Comportamento |
+|---|---|---|
+| **Criação** | Botão **New** (via Action Override) | Carrega o layout de criação do objeto e exibe todas as seções e campos do formulário padrão, com o preenchimento automático de endereço |
+| **Edição** | Lightning Record Page do `Appointment__c` | Exibe apenas o bloco **Pet Owner Address** (CEP, Street, Neighborhood, City e State) |
+
+### Principais recursos técnicos
+
+- `lightning-record-edit-form` e `lightning-input-field` para criação e edição do registro;
+- `getRecordCreateDefaults` (`lightning/uiRecordApi`) com `@wire` e parâmetro reativo: em modo edição o parâmetro é `undefined` e o wire não é executado;
+- Layout dinâmico: campos somente leitura na criação (ex.: `Owner`) são ignorados e, se algum campo de endereço não estiver no Page Layout, ele é adicionado em uma seção própria;
+- Chamada Apex imperativa, disparada automaticamente ao completar 8 dígitos;
+- Proteção contra respostas obsoletas: `lastQueriedZipCode` descarta o retorno de consultas antigas quando o usuário altera o CEP durante a chamada e evita consultas repetidas para o mesmo CEP;
+- Em modo edição, o CEP já salvo é registrado no evento `load`, evitando que o endereço existente seja sobrescrito ao abrir o registro;
+- Feedback visual com spinner e mensagem de sucesso ou erro abaixo do campo CEP;
+- Após salvar em modo criação, exibe um toast e abre o registro criado com `NavigationMixin`; o botão **Cancel** retorna à lista;
+- Fallback: se o layout não puder ser carregado, o componente exibe um aviso e mantém o bloco de endereço utilizável.
+
+### Configuração
+
+As constantes no topo do arquivo `appointmentCepLookup.js` concentram os pontos de ajuste:
+
+| Constante | Função |
+|---|---|
+| `OBJECT_API_NAME` | API Name do objeto (`Appointment__c`) |
+| `FIELD` | API Names dos campos de CEP, rua, bairro, cidade e estado |
+| `FORMAT_ZIP_CODE_WITH_HYPHEN` | `true` grava `00000-000` (campo com pelo menos 9 caracteres); `false` grava somente os dígitos |
+
+---
+
+## Camada Aura — Action Override
+
+O menu **Override Properties** (Setup → Object Manager → Buttons, Links, and Actions) lista apenas páginas Visualforce e componentes Aura que implementam `lightning:actionOverride`; um LWC não pode ser selecionado diretamente. Por isso foi criado um wrapper Aura mínimo, que apenas renderiza o LWC:
+
+```xml
+<aura:component implements="lightning:actionOverride" access="global">
+    <c:appointmentCepLookup />
+</aura:component>
+```
+
+> **Atenção:** o componente Aura precisa estar na pasta `aura/appointmentNewOverride/`. Arquivos soltos em `aura/` causam erro de deploy e o componente não aparece na lista de override. Como ele aparece no menu de **todos** os objetos, o nome foi mantido explícito.
+
+---
+
+## Estrutura de Arquivos
+
+```text
+force-app/main/default/
+├── aura/
+│   └── appointmentNewOverride/
+│       ├── appointmentNewOverride.cmp
+│       └── appointmentNewOverride.cmp-meta.xml
+├── classes/
+│   ├── ViaCepController.cls
+│   ├── ViaCepController.cls-meta.xml
+│   ├── ViaCepControllerTest.cls
+│   └── ViaCepControllerTest.cls-meta.xml
+├── lwc/
+│   └── appointmentCepLookup/
+│       ├── appointmentCepLookup.html
+│       ├── appointmentCepLookup.js
+│       └── appointmentCepLookup.js-meta.xml
+├── permissionsets/
+│   └── Appointment_ViaCEP_Access.permissionset-meta.xml
+└── remoteSiteSettings/
+    └── ViaCEP.remoteSite-meta.xml
+```
+
+---
+
+## Implantação e Configuração
+
+1. **Deploy dos metadados**
+
+```bash
+sf project deploy start --source-dir force-app/main/default
+```
+
+2. **Executar os testes**
+
+```bash
+sf apex run test --class-names ViaCepControllerTest --code-coverage --result-format human --wait 10
+```
+
+3. **Atribuir o Permission Set** `Appointment - Busca de CEP (ViaCEP)` aos usuários que criam agendamentos: Setup → Permission Sets → Manage Assignments → Add Assignment.
+
+4. **Ativar o Action Override:** Setup → Object Manager → Appointment → Buttons, Links, and Actions → **New** → Edit. Em **Lightning Experience Override**, selecione **Lightning component** e escolha `c:appointmentNewOverride`. Salve e recarregue o Salesforce.
+
+5. **Opcional — Record Page:** no Lightning App Builder, adicione o componente **Appointment ZIP Code Lookup** à Record Page do `Appointment__c` para editar o endereço de agendamentos existentes.
+
+### Uso
+
+1. Acesse **Appointments** e clique em **New**;
+2. Preencha os dados do agendamento e digite o CEP do tutor;
+3. Ao completar os 8 dígitos, rua, bairro, cidade e UF são preenchidos e a mensagem `Address filled in automatically.` é exibida;
+4. Revise os campos, se necessário, e clique em **Save**.
+
+---
+
+## Testes Automatizados — ViaCepControllerTest
+
+Os testes não dependem da API real: o serviço é simulado por um `HttpCalloutMock` configurável (status, corpo e exceção) registrado com `Test.setMock`. Nos cenários de sucesso, também são validados o **endpoint** e o **método HTTP** utilizados no callout.
+
+| Cenário | Resultado esperado |
+|---|---|
+| CEP válido com máscara (`01001-000`) | Endereço retornado; chamada `GET` para `.../ws/01001000/json/` |
+| CEP válido sem máscara | Endereço retornado |
+| CEP genérico, sem logradouro e bairro | Rua e bairro vazios; cidade e UF preenchidas |
+| CEP inexistente (`{"erro": true}`) | `AuraHandledException` — CEP não encontrado |
+| CEP inexistente (`{"erro": "true"}`) | `AuraHandledException` — CEP não encontrado |
+| CEP nulo | `AuraHandledException` — CEP inválido |
+| CEP em branco | `AuraHandledException` — CEP inválido |
+| CEP com menos de 8 dígitos | `AuraHandledException` — CEP inválido |
+| CEP com mais de 8 dígitos | `AuraHandledException` — CEP inválido |
+| CEP com letras | `AuraHandledException` — CEP inválido |
+| API retorna HTTP 400 | `AuraHandledException` — formato inválido |
+| API retorna HTTP 500 | `AuraHandledException` — serviço indisponível |
+| Resposta que não é JSON | `AuraHandledException` — resposta inesperada |
+| Falha na chamada (timeout simulado) | `AuraHandledException` — falha na consulta |
+
+---
+
+## Segurança
+
+- **Least Privilege:** o acesso à classe Apex é concedido por Permission Set dedicado;
+- A classe utiliza `with sharing`;
+- Somente o CEP trafega para o serviço externo; nome, CPF, e-mail e demais dados do tutor não são enviados;
+- O callout fica restrito ao domínio autorizado no Remote Site Setting;
+- Timeout de 10 segundos evita que a interface fique bloqueada por indisponibilidade da API.
+
+---
+
+## Decisões Técnicas
+
+| Decisão | Justificativa |
+|---|---|
+| Callout realizado no Apex, e não pelo navegador | Evita configuração de CSP Trusted Sites, centraliza validação e tratamento de erros |
+| Remote Site Setting em vez de Named Credential | API pública, sem autenticação nem segredos |
+| `AuraHandledException` com `setMessage` | Sem `setMessage`, a mensagem original não chega ao LWC nem aos testes |
+| `JSON.deserializeUntyped` | Permite tratar o campo `erro` como booleano ou texto, sem depender de uma classe de deserialização rígida |
+| Layout de criação lido dinamicamente | Mantém paridade com o formulário padrão e evita duplicar a lista de campos no código |
+| Wrapper Aura | Único mecanismo aceito pelo menu de override do botão **New** |
+| Identificadores em inglês e comentários em português | Padronização do código-fonte |
+
+---
+
+## Solução de Problemas
+
+| Sintoma | Causa provável | Solução |
+|---|---|---|
+| `Unauthorized endpoint` | Remote Site Setting inexistente ou inativo | Implantar `ViaCEP.remoteSite-meta.xml` e conferir se está ativo |
+| Lista de override exibe apenas `--None--` | Pasta Aura fora de `aura/appointmentNewOverride/` ou deploy não realizado | Corrigir a estrutura de pastas e implantar novamente |
+| Erro de acesso à classe Apex | Permission Set não atribuído | Atribuir `Appointment - Busca de CEP (ViaCEP)` ao usuário |
+| Campos não aparecem ou dão erro no formulário | API Names diferentes dos utilizados | Ajustar as constantes `OBJECT_API_NAME` e `FIELD` no `.js` e o `.js-meta.xml` |
+| `State__c` não é preenchido | Picklist com valores diferentes da sigla da UF | Padronizar os valores do picklist com as siglas (`PR`, `SP`, ...) |
+| `value too long` ao salvar | `CEP__c` com menos de 9 caracteres | Aumentar o tamanho do campo ou definir `FORMAT_ZIP_CODE_WITH_HYPHEN = false` |
+| Rua e bairro vazios para um CEP | CEP genérico de cidade pequena | Comportamento esperado; preencher manualmente |
+
+---
+
+## Limitações Conhecidas e Evoluções
+
+- O botão **Save & New** não está disponível no formulário substituído;
+- Em objetos com mais de um record type, o formulário utiliza o layout do record type padrão;
+- A integração depende da disponibilidade do ViaCEP; em caso de falha, o preenchimento manual continua possível.
+
+**Evoluções possíveis:**
+
+- Migrar para **Named Credential** caso seja adotada uma API que exija autenticação;
+- Implementar cache das consultas para reduzir chamadas repetidas;
+- Mover o mapeamento de campos para **Custom Metadata**;
+- Reutilizar o componente no objeto `PetOwner__c`, que também possui o campo CEP.
 
 ---
 
@@ -456,11 +727,13 @@ Permite visualizar a demanda por:
 | Data Model | Custom Objects & Fields |
 | Automação | Flow |
 | Backend | Apex |
+| Integração | Apex Callout (HTTP/REST) · API pública ViaCEP · Remote Site Setting |
 | Query Language | SOQL |
 | Trigger | Apex Trigger |
 | Architecture Pattern | Trigger Handler |
 | Testing | Apex Test Classes |
 | Frontend | Lightning Web Components |
+| Customização de UI | Action Override (wrapper Aura) |
 | UI | Lightning App / Lightning Record Pages |
 | Segurança | Profiles, Permission Sets, OWD, Sharing Rules, FLS |
 | Interface dinâmica | Dynamic Forms |
@@ -506,7 +779,15 @@ Permite visualizar a demanda por:
 - `@AuraEnabled(cacheable=true)`;
 - Lightning Web Components;
 - `@wire`;
-- `lightning-datatable`.
+- `lightning-datatable`;
+- Apex Callouts (HTTP) e integração com API REST externa;
+- Remote Site Settings;
+- `HttpCalloutMock` e `Test.setMock`;
+- Tratamento de exceções com `AuraHandledException`;
+- Chamadas Apex imperativas em LWC;
+- `lightning-record-edit-form` e `lightning-input-field`;
+- `getRecordCreateDefaults` (layout dinâmico);
+- Action Override com wrapper Aura (`lightning:actionOverride`).
 
 ## Automation
 
@@ -540,6 +821,7 @@ O Belle VetCare CRM consolidou:
 - Validação de regras de negócio com Apex;
 - Testes automatizados;
 - Agenda diária em LWC;
+- Preenchimento automático de endereço por CEP, com integração à API pública ViaCEP;
 - Automação de notificações por e-mail;
 - Segurança granular;
 - Atendimento digital automatizado;
