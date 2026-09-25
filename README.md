@@ -67,7 +67,7 @@ O projeto utiliza Salesforce para centralizar essas informações e automatizar 
 
 ## Apex
 
-O projeto utiliza Apex para implementar regras de negócio que exigem maior controle programático.
+O projeto utiliza Apex para implementar regras de negócio que exigem maior controle.
 
 Principais conceitos aplicados:
 
@@ -76,16 +76,14 @@ Principais conceitos aplicados:
 * SOQL
 * Bulkification
 * Governor Limits
-* `addError()`
 * Classes de serviço
 * Exception Handling
-* `@AuraEnabled`
+* Aura
 * Test Classes
-* `HttpCalloutMock`
 
 ### Validação de conflitos
 
-Um dos principais desafios técnicos foi impedir que um veterinário recebesse dois agendamentos para o mesmo horário.
+Um dos principais desafios técnicos foi impedir que um veterinário recebesse dois agendamentos para o mesma data e hora.
 
 A solução utiliza:
 
@@ -111,14 +109,13 @@ O projeto possui componentes desenvolvidos com **LWC** para melhorar a experiên
 
 ### Vet Daily Appointments
 
-Componente responsável pela visualização da agenda diária dos veterinários.
+Componente responsável pela visualização somente da agenda dos veterinários.
 
 Recursos:
 
 * Filtro por data
 * Consulta de dados via Apex
-* `lightning-datatable`
-* Ordenação por horário
+* Ordenação por data e hora
 * Exibição de veterinário, serviço e espécie
 * Tratamento de ausência de resultados
 * Abertura de formulário para novo agendamento
@@ -181,13 +178,11 @@ Foram utilizados diferentes tipos de Flow de acordo com a necessidade do process
 * Screen Flow
 * Autolaunched Flow
 
-A utilização de Flow em conjunto com Apex demonstra uma abordagem híbrida entre **Low-Code e Pro-Code**.
-
 ---
 
 # Segurança
 
-A solução considera o modelo de segurança do Salesforce utilizando:
+O modelo de segurança do Salesforce utilizando:
 
 * Profiles
 * Permission Sets
@@ -217,14 +212,14 @@ Exemplos:
 
 # Arquitetura
 
-A solução combina recursos declarativos e programáticos da plataforma:
+A solução combina recursos da plataforma:
 
 ```text
                  Salesforce
                      │
         ┌────────────┴────────────┐
         │                         │
-   Declarative                 Programmatic
+   Declarativo                 Código
         │                         │
    Flow Builder                Apex
    Reports                     SOQL
@@ -245,14 +240,14 @@ A solução combina recursos declarativos e programáticos da plataforma:
 | CRM             | Salesforce                                 |
 | Backend         | Apex                                       |
 | Frontend        | Lightning Web Components                   |
-| Database        | SOQL / Salesforce Data Model               |
-| Automation      | Flow Builder                               |
-| Integration     | REST API / HTTP Callout                    |
-| Testing         | Apex Test Classes / HttpCalloutMock        |
+| Banco de dados  | SOQL / Salesforce Data Model               |
+| Automação       | Flow Builder                               |
+| Integração      | REST API                                   |
+| Testes          | Apex Test Classes                          |
 | UI              | Lightning Experience / SLDS                |
-| Security        | Profiles / Permission Sets / FLS / Sharing |
-| Analytics       | Reports / Dashboards                       |
-| Version Control | Git / GitHub                               |
+| Segurança       | Profiles / Permission Sets / FLS / Sharing |
+| Análises        | Reports / Dashboards                       |
+| Versionamento   | Git / GitHub                               |
 
 ---
 
@@ -322,30 +317,6 @@ Para a integração externa, `HttpCalloutMock` é utilizado para manter os teste
 * Dashboards
 * Lightning Experience
 
-### Boas Práticas
-
-* Separação de responsabilidades
-* Código bulkificado
-* Tratamento de exceções
-* Testes automatizados
-* Segurança baseada em permissões
-* Integração desacoplada
-* Combinação de Low-Code e Pro-Code
-
----
-
-# Roadmap
-
-Possíveis evoluções do projeto:
-
-* Evolução do atendimento com Agentforce
-* Novos componentes LWC
-* Ampliação das automações
-* Novas integrações externas
-* Melhorias nos dashboards
-* Expansão da cobertura de testes
-* Novas funcionalidades de atendimento
-
 ---
 
 # Objetivo do Portfólio
@@ -360,6 +331,6 @@ A proposta não é apenas demonstrar conhecimento de ferramentas, mas mostrar co
 
 **Thiago de Souza**
 
-Salesforce Developer | Apex | LWC | SOQL | Flow | REST API
+Salesforce Developer | Apex | LWC | SOQL | Flow | REST API | Automation & Integration
 
 Projeto desenvolvido para estudos, prática e demonstração de conhecimentos em Salesforce Development.
